@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EPR Pedágio Eletrônico</title>
+  <link rel="icon" type="image/png" href="assets/images/pictures/Logo_EPR.png">
+
+  <style>
+    @font-face{font-family:'Gilroy-Light';src:url(fonts/Gilroy-Light.feb2c15a2c628a5d.ttf);font-weight:300}
+    @font-face{font-family:'Gilroy-Medium';src:url(fonts/Gilroy-Medium.e018f97cc34fc253.ttf);font-weight:500}
+    @font-face{font-family:'Gilroy-SemiBold';src:url(fonts/Gilroy-SemiBold.0560c261627a3561.ttf);font-weight:600}
+    @font-face{font-family:'Gilroy-ExtraBold';src:url(fonts/Gilroy-ExtraBold.c16f19ccb9e1a32e.ttf);font-weight:800}
+    @font-face{font-family:'Gilroy-Heavy';src:url(fonts/Gilroy-Heavy.f44feaa29e66c75f.ttf);font-weight:900}
+    @font-face{font-family:'Gilroy-Black';src:url(fonts/Gilroy-Black.73fdfd3d28dae0f0.ttf);font-weight:900}
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Gilroy-SemiBold', sans-serif;
+      font-size: 16px;
+      background-color: #fff;
+      background-image: url(bg-home-superior.png), url(assets/images/pictures/img-app-mao-ilustrativa.png);
+      background-repeat: no-repeat, no-repeat;
+      background-position: top center, bottom 230px center;
+      background-size: 105% auto, 100% auto;
+      min-height: 100vh;
+    }
+    img { max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ================= HEADER ================= */
+    .header-body { width: 100%; }
+    .top-header { width: 100%; }
+    .main-content-wrapper {
+      display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+      background-color: #71cc98;
+    }
+    .main-content-wrapper > div {
+      width: 100%; height: 40px; display: flex; align-items: center; justify-content: center;
+      background: #71cc98; text-align: center; padding-top: 5px;
+      color: #003057; font-weight: 700;
+    }
+    .menu-bar { display: flex; gap: 34px; align-items: center; justify-content: center; padding: 8px 0; }
+    .menu-bar a { color: #003057; font-weight: 700; font-size: 15px; cursor: pointer; }
+    .menu-bar a:hover { color: #1b3665b3; text-decoration: underline; }
+    .dropdown { position: relative; }
+    .dropdown-content {
+      display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      background: #fff; min-width: 16em; border-radius: 18px; text-align: center;
+      z-index: 200; box-shadow: 0 5px 15px rgba(0,0,0,.15);
+    }
+    .dropdown-content a { display: block; padding: 14px 18px; color: #003057; font-weight: 600; font-size: 14px; }
+    .dropdown-content a:hover { background: #003057; color: #fff; }
+    .dropdown-content a:first-child { border-radius: 18px 18px 0 0; }
+    .dropdown-content a:last-child { border-radius: 0 0 18px 18px; }
+    .dropdown:hover .dropdown-content { display: block; }
+
+    .info-pages-container {
+      width: 543px; height: 55px; margin: 30px auto 0;
+      background-color: #71cc98; border-radius: 0 0 50px 50px;
+    }
+    .info-pages { display: flex; justify-content: space-evenly; align-content: center; text-align: center; height: 100%; }
+    .dot-style-list { color: #003057; list-style: none; margin: 0; padding: 0; display: flex; gap: 26px; align-items: center; }
+    .dot-style-list a { color: #003057; font-weight: 700; font-size: 14px; }
+    .dot-style-list a:hover { color: #1b3665b3; text-decoration: underline; }
+
+    .logos { display: flex; flex-direction: row; justify-content: center; align-items: center; margin-top: 14px; }
+    .logos img { margin: auto 60px; }
+    #epr-logo { width: 120px; height: auto; }
+    #free-flow { width: auto; height: 110px; }
+
+    /* ================= ACTIONS ================= */
+    .actions-wrapper {
+      display: flex; justify-content: center;
+      margin-top: 30px; margin-left: 70px;
+    }
+    .know-more-body { height: 100%; margin-right: 80px; }
+    .vertical-orientation-center { display: flex; flex-direction: column; align-items: center; }
+    .infos { display: flex; flex-direction: row; gap: 26px; }
+    .info { display: flex; flex-direction: row; align-items: center; gap: 10px; }
+    .info img.icon { width: 60px; height: 60px; }
+    .info .text { font-size: 20px; color: #71cc98; line-height: 1.15; }
+    .info .text strong { font-family: 'Gilroy-ExtraBold'; font-weight: 400; color: #fff; }
+    .know-more-button {
+      font-family: 'Gilroy-ExtraBold'; font-size: 20px;
+      width: 255px; padding: 10px; color: #fff;
+      border: 1px solid #fff; border-radius: 20px; cursor: pointer;
+      background: transparent; text-align: center; margin-top: 16px;
+      transition: background-color .5s;
+    }
+    .know-more-button:hover { background-color: rgba(255,255,255,.2); }
+
+    .card-actions { display: flex; flex-direction: row; justify-content: center; gap: 24px; }
+
+    /* card-sign-in */
+    .card-sign-in {
+      display: flex; flex-direction: column; align-items: center;
+      background: #fff; color: #71cc98; border-radius: 20px;
+      box-shadow: 4px 4px 18px 1px rgba(0,0,0,.4);
+      width: 335px; min-height: 330px; padding: 10px 0 16px;
+    }
+    .title { font-family: 'Gilroy-ExtraBold'; color: #003057; font-weight: 700; margin: 16px auto; font-size: 23px; }
+    .info-text { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+    .info-text p { font-family: 'Gilroy-Light'; color: #403f3b; font-size: 14px; margin: 0; }
+    .info-text p strong, .info-text a strong { font-weight: 400; color: #71cc98; }
+    .benefits-row { display: flex; flex-direction: row; align-items: baseline; gap: 14px; }
+    .benefits-icons { display: flex; flex-direction: column; align-items: center; }
+    .benefits-icons img { margin: 6px 0; }
+    .benefits-texts p { margin: 9px 0; }
+    button.create-account, button.login {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 250px; height: 44px; border: none; border-radius: 10px;
+      font-family: 'Gilroy-ExtraBold'; font-size: 16px; font-weight: 900;
+      cursor: pointer; margin-top: 8px;
+    }
+    button.create-account { color: #003057; background-color: #71cc98; }
+    button.login { color: #fff; background-color: #003057; }
+    button.create-account:hover, button.login:hover { filter: brightness(1.08); }
+    .terms { text-align: center; padding: 12px 20px 0; }
+    .terms p, .terms a { display: inline; font-family: 'Gilroy-Light'; font-size: 11.5px; color: #403f3b; }
+    .terms a strong { color: #71cc98; font-weight: 400; }
+
+    /* card-plate-search */
+    .card-plate-search {
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      background: #fff; color: #71cc98;
+      border-radius: 20px;
+      box-shadow: 4px 4px 18px 1px rgba(0,0,0,.4);
+      width: 315px; min-height: 330px; padding: 10px 20px 14px; position: relative;
+    }
+    .card-plate-search h1 { font-family: 'Gilroy-ExtraBold'; color: #71cc98; font-size: 24px; margin: 4px 0 10px; }
+    .card-plate-search h2 { font-family: 'Gilroy-SemiBold'; color: #003057; font-size: 19px; margin: 0 0 12px; }
+    .input-wrap { position: relative; }
+    .input-wrap input {
+      width: 250px; height: 38px; border-radius: 6px;
+      border: 2px solid #71CC98; padding-left: 40px;
+      color: #003057; font-size: 16px; font-family: 'Gilroy-ExtraBold';
+      text-transform: uppercase; letter-spacing: .08em; text-align: left;
+      background: transparent;
+    }
+    .input-wrap input:focus { outline: none; }
+    .input-wrap input.red-input { border-color: #f70d1a; }
+    .icon-search {
+      position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
+      width: 22px; height: 18px;
+      background: url(assets/images/icons/icone-box-consulta-avulsa.png) center/cover no-repeat;
+    }
+    .error { display: block; font-family: 'Gilroy-Medium'; font-size: 10px; color: #f70d1a; margin-top: 3px; min-height: 13px; width: 250px; text-align: left; }
+    button.search {
+      color: #003057; background-color: #71cc98;
+      width: 250px; height: 42px; margin-top: 10px;
+      border: none; border-radius: 8px; cursor: pointer;
+      font-family: 'Gilroy-ExtraBold'; font-size: 15px; font-weight: 900; letter-spacing: .03em;
+    }
+    button.search:hover { filter: brightness(.95); }
+    .div-checkbox { text-align: left; width: 250px; margin-top: 10px; }
+    .custom-checkbox {
+      display: inline-block; cursor: pointer;
+      width: 13px; height: 13px; background-color: #fff;
+      border: 1px solid #54595f; border-radius: 2px;
+      position: relative; vertical-align: middle; margin-right: 5px;
+    }
+    .custom-checkbox.checked { background-color: #003057; }
+    .custom-checkbox.checked::after {
+      content: "\2713"; position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%); color: #fff; font-size: 11px;
+    }
+    .checkbox-label { font-family: 'Gilroy-Light'; font-size: 12.5px; color: #403f3b; cursor: pointer; }
+    .checkbox-label a { color: #71cc98; }
+
+    /* ===== resultados dentro do card ===== */
+    .card-plate-search.results-view { justify-content: flex-start; }
+    .results-view h1 { font-family: 'Gilroy-Heavy'; color: #71cc98; font-size: 26px; margin: 0 0 4px; font-weight: 900; text-align: center; }
+    .results-view h1 { position: relative; display: flex; align-items: center; justify-content: center; }
+    .close-x { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; border: none; background: #003057; color: #fff; font-size: 20px; line-height: 1; cursor: pointer; padding: 0; }
+    .close-x:hover { filter: brightness(1.2); }
+    .ticket-list {
+      display: flex; flex-direction: column;
+      height: 195px; width: 215px; max-width: 100%; margin: 24px auto 0;
+      border: 1px solid #003057; border-radius: 8px;
+      overflow-y: auto; scrollbar-color: #003057 transparent;
+    }
+    .ticket { padding: 9px 12px; border-bottom: 1px solid #d9d9d9; cursor: pointer; text-align: left; }
+    .ticket:last-child { border-bottom: none; }
+    .ticket:hover { background: #f4f8f4; }
+    .ticket .head { display: flex; justify-content: space-between; align-items: center; }
+    .ticket .ident { font-family: 'Gilroy-Light'; color: #003057; font-size: 11px; word-break: break-all; }
+    .ticket .linha { display: flex; align-items: center; gap: 7px; font-family: 'Gilroy-Medium'; color: #003057; font-size: 13.8px; padding: 2px 0; }
+    .ticket .linha img { width: 19px; height: 19px; flex: none; }
+    .ticket .linha .txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ticket .valor { color: #003057; font-weight: 700; }
+    .status-chip {
+      display: inline-flex; align-items: center; border-radius: 6px;
+      border: 1px solid #6ec1e4; color: #6ec1e4; padding: 1px 8px; margin: 3px 0 0;
+      font-family: 'Gilroy-Light'; font-weight: 700; font-size: 12px;
+    }
+    .total-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 26px; width: 100%; max-width: 300px; }
+    .total-area { margin-top: 0; text-align: left; }
+    .total-row .btn-next { flex: none; width: 160px; height: 40px; padding: 0; border: none; border-radius: 8px; text-align: center; background: #003057; color: #fff; font-family: 'Gilroy-ExtraBold'; font-size: 14px; font-weight: 900; cursor: pointer; }
+    .total-row .btn-next:hover { filter: brightness(1.1); }
+    .total-row .btn-next.pronto { background: #71cc98; color: #003057; }
+    .total-area h4 { color: #003057; font-size: 12px; font-family: 'Gilroy-Medium'; margin: 0; }
+    .total-area h3 { color: #003057; font-size: 20px; margin: 0; font-family: 'Gilroy-ExtraBold'; }
+    .res-actions { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; width: 250px; }
+    .res-actions button {
+      width: 250px; height: 40px; border: none; border-radius: 8px;
+      font-family: 'Gilroy-ExtraBold'; font-size: 14px; font-weight: 900; cursor: pointer;
+    }
+    .res-actions .btn-next { color: #fff; background-color: #003057; }
+    .res-actions .btn-back { color: #003057; background-color: #71cc98; }
+    .res-actions button:hover { filter: brightness(1.08); }
+    .msg { font-family: 'Gilroy-Medium'; font-size: 12px; color: #003057; min-height: 15px; margin-top: 6px; text-align: center; }
+
+    /* ===== recibo / pagamento ===== */
+    .receipt-view { display: flex; flex-direction: column; align-items: center; width: 100%; }
+    .receipt-head { position: relative; width: 100%; display: flex; justify-content: center; }
+    .receipt-head h1 { font-family: 'Gilroy-Heavy'; color: #71cc98; font-size: 24px; margin: 0 0 8px; font-weight: 900; }
+    .receipt-close { position: absolute; right: 4px; top: 0; width: 30px; height: 30px; border-radius: 50%; border: none; background: #003057; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
+    .receipt-close img { width: 19px; height: 19px; }
+    .receipt-desc { font-family: 'Gilroy-SemiBold'; color: #003057; font-size: 18px; text-align: center; max-width: 270px; margin: 10px 0 8px; line-height: 1.35; }
+    .email-wrap { position: relative; width: 100%; max-width: 280px; margin-top: 16px; }
+    .email-wrap input {
+      width: 100%; height: 46px; border-radius: 6px;
+      border: 2px solid #71CC98; padding-left: 44px;
+      color: #003057; font-size: 16px; font-family: 'Gilroy-ExtraBold';
+      background: transparent; text-transform: none; letter-spacing: normal;
+    }
+    .email-wrap input:focus { outline: none; }
+    .email-wrap input.red-input { border-color: #f70d1a; }
+    .icon-email { position: absolute; top: 50%; left: 11px; transform: translateY(-50%); width: 20px; height: 16px; background: url(assets/images/icons/icone-email.svg) center/contain no-repeat; }
+    .receipt-error { display: block; font-family: 'Gilroy-SemiBold'; font-size: 12px; color: #f70d1a; margin-top: 2px; min-height: 12px; width: 280px; max-width: 100%; text-align: left; }
+    .div-email-checkbox { max-width: 280px; text-align: left; margin: 8px 0 10px; }
+    .div-email-checkbox .checkbox-label { font-family: 'Gilroy-SemiBold'; font-size: 14px; }
+    .div-email-checkbox .custom-checkbox { border-width: 0.6px; }
+    .pix-payment, .card-payment {
+      width: 250px; height: 40px; border: none; border-radius: 8px;
+      font-family: 'Gilroy-ExtraBold'; font-size: 15px; font-weight: 900; cursor: pointer;
+    }
+    .pix-payment { color: #003057; background-color: #71cc98; margin-bottom: 6px; }
+    .card-payment { color: #fff; background-color: #003057; margin-bottom: 8px; display: none; }
+    .pix-payment:hover { filter: brightness(.95); }
+    .card-payment:hover { filter: brightness(1.1); }
+    .receipt-processing { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; min-height: 240px; width: 100%; }
+    .receipt-processing h2 { font-family: 'Gilroy-SemiBold'; color: #003057; font-size: 18px; margin: 0; max-width: 250px; text-align: center; }
+    .receipt-processing p { font-family: 'Gilroy-Medium'; color: #003057; font-size: 13px; margin: 0; text-align: center; max-width: 250px; }
+    .receipt-processing button { width: 250px; height: 44px; border: none; border-radius: 8px; background: #71cc98; color: #003057; font-family: 'Gilroy-ExtraBold'; font-size: 15px; font-weight: 900; cursor: pointer; }
+    .spinner.sm { width: 34px; height: 34px; border-width: 4px; }
+    .pix-screen { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; padding: 8px 0; }
+    .pix-screen h2 { font-family: 'Gilroy-SemiBold'; color: #003057; font-size: 18px; margin: 0; text-align: center; }
+    .pix-screen img.qr { width: 180px; height: 180px; border-radius: 8px; }
+    .pix-screen .valor-pix { font-family: 'Gilroy-ExtraBold'; color: #003057; font-size: 20px; margin: 0; }
+    .pix-screen .copia-btn { width: 250px; height: 40px; border: none; border-radius: 8px; background: #003057; color: #fff; font-family: 'Gilroy-ExtraBold'; font-size: 14px; font-weight: 900; cursor: pointer; letter-spacing: .03em; }
+    .pix-screen .copia-btn:hover { filter: brightness(1.15); }
+    .pix-screen .aguardando { font-family: 'Gilroy-Medium'; color: #403f3b; font-size: 13px; margin: 0; text-align: center; }
+
+    @media (max-width: 640px) {
+      .email-wrap input, .receipt-error, .div-email-checkbox, .pix-payment, .card-payment, .receipt-processing button, .pix-screen .copia-btn { width: 100%; max-width: 280px; }
+      .email-wrap input { max-width: 280px; }
+      .pix-payment, .card-payment { max-width: 280px; }
+    }
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 200px; width: 215px; margin: 0 auto; border: 1px solid #003057; border-radius: 8px; padding: 10px;
+    }
+    .empty-state img { height: 100px; width: auto; }
+    .empty-state p { color: #003057; max-width: 210px; font-family: 'Gilroy-Medium'; font-size: 13px; margin: 8px 0 0; }
+
+    /* ================= BENEFITS ================= */
+    .benefits { display: flex; flex-direction: row; justify-content: center; margin: 200px auto 50px; align-items: baseline; }
+
+    /* loading */
+    .view-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; min-height: 230px; width: 100%; }
+    .spinner { width: 92px; height: 92px; border: 7px solid #dfe9df; border-top-color: #71cc98; border-radius: 50%; animation: spin .9s linear infinite; }
+    .view-loading p { font-family: 'Gilroy-Medium'; color: #003057; font-size: 14px; margin: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .benefit-card {
+      padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      background: #fff; border: 2px solid #71cc98; border-radius: 20px;
+      height: 300px; width: 330px; margin: 0 18px;
+    }
+    .benefit-card .icon { height: 80px; width: auto; }
+    .benefit-card .title { color: #003057; font-family: 'Gilroy-ExtraBold'; font-size: 24px; font-weight: 900; margin-top: 14px; }
+    .benefit-card .content { font-family: 'Gilroy-Light'; text-align: center; color: #403f3b; font-size: 15px; line-height: 1.45; }
+    .benefit-card .content strong { color: #71cc98; font-family: 'Gilroy-ExtraBold'; font-weight: 400; }
+
+    /* ================= DOWNLOAD APP ================= */
+    .download-app { display: flex; flex-direction: column; align-items: center; margin: 60px auto; text-align: center; }
+    .download-app h1 { font-family: 'Gilroy-Heavy'; color: #003057; font-size: 40px; margin: 0 0 10px; }
+    .download-app p { font-family: 'Gilroy-Light'; font-size: 18px; color: #403f3b; max-width: 620px; margin: 0 0 22px; }
+    .download-app p strong { color: #71cc98; font-family: 'Gilroy-ExtraBold'; font-weight: 400; }
+    .store-badges { display: flex; gap: 18px; }
+    .store-badges img { height: 64px; width: auto; cursor: pointer; }
+
+    /* ================= COMO FUNCIONA / FAQ ================= */
+    .info-section { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 60px; max-width: 1000px; margin: 80px auto; padding: 0 20px; }
+    .info-section .txt h1 { font-family: 'Gilroy-ExtraBold'; color: #003057; font-size: 36px; font-weight: 900; margin-bottom: 22px; }
+    .info-section .txt p { font-size: 18px; font-family: 'Gilroy-Light'; color: #403f3b; line-height: 1.5; margin: 0; }
+    .info-section .txt p strong { color: #003057; font-family: 'Gilroy-ExtraBold'; font-weight: 400; }
+    .info-section img { max-width: 420px; height: auto; }
+
+    .faq { max-width: 800px; margin: 80px auto; padding: 0 20px; }
+    .faq .title { text-align: center; margin-bottom: 30px; }
+    .faq .title h1 { font-size: 36px; font-family: 'Gilroy-ExtraBold'; color: #003057; font-weight: 900; margin: 0; }
+    .faq .title h3 { font-size: 20px; font-family: 'Gilroy-Medium'; color: #003057; margin: 14px 0 0; }
+    .faq details {
+      background: #003057; margin: 14px 0; border-radius: 12px;
+      color: #fff; overflow: hidden;
+    }
+    .faq summary {
+      font-family: 'Gilroy-ExtraBold'; font-weight: 400; font-size: 17px; color: #fff;
+      padding: 16px 20px; cursor: pointer; list-style: none;
+    }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: "+"; float: right; font-size: 22px; line-height: 1; }
+    .faq details[open] summary::after { content: "–"; }
+    .faq .ans { font-family: 'Gilroy-Medium'; font-size: 14.5px; color: #fff; padding: 0 20px 18px; line-height: 1.6; }
+    .faq .ans strong { color: #71cc98; }
+    .faq .ans a { color: #71cc98; }
+
+    .sign-in-wrap { display: flex; justify-content: center; margin: 50px auto; }
+    button.sign-in {
+      margin: 50px auto; color: #003057; background-color: #71cc98;
+      width: 364px; height: 51px; border: none; border-radius: 25px;
+      font-family: 'Gilroy-ExtraBold'; font-size: 22px; font-weight: 900; cursor: pointer;
+    }
+    button.sign-in:hover { filter: brightness(.95); }
+
+    /* Banner mao com celular */
+    .hand-banner { display: flex; justify-content: center; margin: 8px auto 0; }
+    .hand-banner img { width: 100%; max-width: 400px; height: auto; transform: translateY(7.6%); }
+
+    /* ================= FOOTER ================= */
+    .footer-body {
+      display: flex; flex-direction: row; align-items: center; justify-content: space-around;
+      border-top: 15px solid #71cc98; background-color: #003057;
+      margin-top: 0; padding: 85px 20px 95px;
+    }
+    .footer-body .logo img { width: 170px; }
+    .infos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; color: #fff; text-align: center; font-size: 15px; font-family: 'Gilroy-Medium'; }
+    .infos a { display: grid; grid-template-columns: auto 1fr; gap: 5px; align-items: center; }
+    .infos a img { height: 22px; }
+    .concessionaire-info { color: #fff; display: grid; gap: 8px; text-align: end; align-self: end; font-size: 13px; font-family: 'Gilroy-Light'; }
+    .social-media { color: #fff; }
+    .social-media p { font-weight: 700; font-size: 16px; margin: 0 0 8px; }
+    .social-media-links { display: flex; gap: 14px; }
+    .social-media-links a { height: 26px; }
+    .social-media-links img { height: 26px; width: auto; }
+
+
+    /* reCAPTCHA badge */
+    .recaptcha-badge {
+      position: fixed; left: 14px; bottom: 14px; z-index: 500;
+      background: #fff; border: 1px solid #d3d3d3; border-radius: 4px;
+      padding: 5px; display: flex; align-items: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,.15); font-family: Arial, sans-serif;
+    }
+    .recaptcha-badge .rc-text { font-size: 9px; color: #555; line-height: 1.2; max-width: 270px; }
+    .recaptcha-badge .rc-text a { color: #1a73e8; text-decoration: none; }
+
+    .msg-center { font-family: 'Gilroy-Medium'; font-size: 13px; color: #003057; min-height: 16px; margin-top: 8px; text-align: center; }
+
+    /* Marca mobile */
+    .mobile-brand { display: none; flex-direction: column; align-items: center; margin-top: 0; padding-top: 85px; width: 100%; box-sizing: border-box; }
+    .mobile-brand img.epr { width: 166px; height: auto; }
+    .mobile-brand img.art { width: 363px; height: auto; margin-top: 8px; }
+
+    /* Burger mobile */
+    .burger {
+      display: none; position: absolute; top: 14px; left: 14px; z-index: 300;
+      width: 42px; height: 42px; border: none; background: transparent; cursor: pointer;
+      flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+    }
+    .burger span { display: block; width: 32px; height: 4px; background: #71cc98; border-radius: 2px; }
+    .mobile-menu {
+      display: none; position: absolute; top: 60px; left: 14px; z-index: 300;
+      background: #71cc98; border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.25);
+      min-width: 200px; padding: 8px 0; text-align: left;
+    }
+    .mobile-menu a { display: block; padding: 12px 20px; color: #003057; font-weight: 700; font-size: 15px; }
+    .mobile-menu a:hover { background: #003057; color: #71cc98; }
+    .mobile-menu .sub { padding-left: 34px; font-weight: 600; font-size: 14px; color: #003057; }
+    .header-body { position: relative; }
+
+    /* ================= MOBILE (prioridade) ================= */
+    @media (max-width: 900px) {
+      body { background-size: auto 40%, 100% auto; background-position: top center, bottom center; }
+
+      /* Header */
+      .burger { display: flex; }
+      .info-pages-container { display: none; }
+      .logos { display: none; }
+      .mobile-brand { display: flex; }
+
+      /* Actions: empilha tudo */
+      .actions-wrapper { flex-direction: column; align-items: center; margin: 20px 0 0; gap: 20px; padding: 0 12px; }
+      .know-more { display: none; }
+      .know-more-body { margin-right: 0; width: 100%; }
+      .infos { flex-wrap: wrap; gap: 14px; justify-content: center; }
+      .info { gap: 6px; }
+      .info img.icon { width: 44px; height: 44px; }
+      .info .text { font-size: 15px; }
+      .know-more-button { width: 220px; font-size: 17px; padding: 8px; }
+
+      /* Cards: largura total, empilhados */
+      .card-actions { flex-direction: column; align-items: center; gap: 20px; width: 100%; }
+      .card-sign-in, .card-plate-search { width: 100%; max-width: 321px; border-radius: 20px; min-height: 0; padding: 10px 16px 10px; }
+      .card-plate-search { min-height: 306px; max-width: 321px; }
+      .card-sign-in .title, .card-plate-search h1 { font-size: 21px; }
+      .card-plate-search h2 { font-size: 17px; }
+
+      /* Busca */
+      .input-wrap input { width: 100%; max-width: 280px; height: 46px; font-size: 17px; }
+      .error { width: 100%; max-width: 280px; }
+      button.search { width: 100%; max-width: 280px; height: 48px; font-size: 16px; }
+      .div-checkbox { width: 100%; max-width: 280px; }
+      .checkbox-label { font-size: 12px; }
+
+      /* Resultados */
+      .results-view h1 { font-size: 22px; }
+      .ticket-list { width: 100%; max-width: 250px; height: 195px; margin: 14px auto 0; }
+      .total-row { margin-top: 18px; }
+      .ticket { padding: 10px; }
+      .ticket .linha { font-size: 13.8px; }
+      .ticket .linha img { width: 18px; height: 18px; }
+      .res-actions { width: 100%; max-width: 280px; }
+      .res-actions button { width: 100%; height: 40px; font-size: 15px; }
+      .empty-state { width: 100%; max-width: 235px; height: 220px; margin: 0 auto; }
+
+      /* Benefits */
+      .benefits { flex-direction: column; align-items: center; margin: 60px auto 30px; gap: 16px; }
+      .benefit-card { width: 100%; max-width: 340px; height: auto; min-height: 240px; margin: 0; padding: 18px; }
+      .benefit-card .icon { height: 60px; }
+      .benefit-card .title { font-size: 20px; }
+      .benefit-card .content { font-size: 14px; }
+
+      /* Download app */
+      .download-app { margin: 40px auto; padding: 0 16px; }
+      .download-app h1 { font-size: 26px; }
+      .download-app p { font-size: 15px; }
+      .store-badges { flex-direction: column; align-items: center; gap: 12px; }
+      .store-badges img { height: 56px; }
+
+      /* Como funciona */
+      .info-section { flex-direction: column; gap: 24px; margin: 50px auto; text-align: center; padding: 0 16px; }
+      .info-section .txt h1 { font-size: 26px; }
+      .info-section .txt p { font-size: 16px; }
+      .info-section img { max-width: 100%; }
+
+      /* FAQ */
+      .faq { margin: 50px auto; padding: 0 14px; }
+      .faq .title h1 { font-size: 26px; }
+      .faq .title h3 { font-size: 16px; }
+      .faq summary { font-size: 15px; padding: 14px 16px; }
+      .faq .ans { font-size: 13.5px; padding: 0 16px 16px; }
+
+      /* Botão cadastrar */
+      .sign-in-wrap { margin: 30px auto 0; padding: 0 16px; }
+      button.sign-in { width: 100%; max-width: 340px; height: 50px; font-size: 19px; margin: 0 auto 4px; }
+
+      /* Footer */
+      .footer-body { flex-direction: column; gap: 30px; border-top-width: 10px; text-align: center; padding: 92px 14px 103px; position: relative; }
+      .footer-body .logo img { height: 80px; width: auto; }
+      .infos { grid-template-columns: repeat(2, 1fr); gap: 26px; font-size: 15px; text-align: center; }
+      .infos a { display: flex; align-items: center; justify-content: center; gap: 6px; }
+      .infos a img { height: 22px; }
+      .concessionaire-info { grid-column: 1 / -1; text-align: right; font-size: 13px; gap: 8px; }
+      .social-media { position: absolute; right: 16px; bottom: 20px; }
+      .social-media p { font-size: 22px; font-weight: 700; text-align: right; margin-bottom: 10px; }
+      .social-media-links { display: grid; grid-template-columns: repeat(4, auto); gap: 18px; width: fit-content; margin-left: auto; justify-content: end; }
+      .social-media-links img { height: 35px; }
+    }
+
+    /* ================= DESKTOP ================= */
+    @media (min-width: 901px) {
+      .card-actions { display: flex; flex-direction: row; justify-content: center; gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="header-body">
+  <button class="burger" id="burgerBtn" aria-label="Menu"><span></span><span></span><span></span></button>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#como-funciona">Como funciona?</a>
+    <a href="#">Tarifas</a>
+    <a href="#" onclick="return false">Baixar o app</a>
+  </div>
+  <div class="info-pages-container">
+    <div class="info-pages">
+      <ul class="dot-style-list">
+        <li><a href="#como-funciona">Como funciona?</a></li>
+        <li class="dropdown"><a href="#">Tarifas ▾</a>
+          <span class="dropdown-content" style="left:0;transform:none">
+            <a href="https://eprsuldeminas.com.br/tarifa-de-pedagio/" target="_blank">EPR SUL DE MINAS</a>
+            <a href="https://epriguacu.com.br/tarifas/" target="_blank">EPR IGUAÇU</a>
+            <a href="https://eprparana.com.br/tarifas/" target="_blank">EPR PARANÁ</a>
+          </span>
+        </li>
+        <li><a href="#" onclick="return false">Baixar o app</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="mobile-brand">
+    <img class="epr" src="assets/images/pictures/Logo-EPR-rodapé.png" alt="EPR">
+    <img class="art" src="assets/images/pictures/Logo_EPR.png" alt="Pedágio Eletrônico">
+  </div>
+  <div class="logos">
+    <img id="epr-logo" src="assets/images/pictures/Logo-EPR-rodapé.png" alt="EPR">
+    <img id="free-flow" src="assets/images/pictures/Logo_EPR.png" alt="Pedágio Eletrônico">
+  </div>
+</header>
+
+<!-- ================= ACTIONS ================= -->
+<div class="actions-wrapper">
+  <div class="know-more">
+    <div class="know-more-body">
+      <div class="vertical-orientation-center">
+        <div class="infos">
+          <div class="info"><img class="icon" src="assets/images/icons/Icone-sem-cabines.png" alt="Sem cabines"><div class="text"><p>Sem</p><p><strong>Cabines</strong></p></div></div>
+          <div class="info"><img class="icon" src="assets/images/icons/icone-sem-paradas.png" alt="Sem paradas"><div class="text"><p>Sem</p><p><strong>Paradas</strong></p></div></div>
+          <div class="info"><img class="icon" src="assets/images/icons/icone-sem-filas.png" alt="Sem filas"><div class="text"><p>Sem</p><p><strong>Filas</strong></p></div></div>
+          <div class="info"><img class="icon" src="assets/images/icons/icone-sem-mensalidade.png" alt="Sem mensalidade"><div class="text"><p>Sem</p><p><strong>Mensalidade</strong></p></div></div>
+        </div>
+        <button class="know-more-button" onclick="window.open('https://eprsuldeminas.com.br/pedagio-sem-cancela/','_blank')">SAIBA MAIS</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-actions">
+    <!-- card busca de placa -->
+    <div class="card-plate-search" id="cardBusca">
+      <div id="viewBusca" style="display:flex;flex-direction:column;align-items:center;width:100%;">
+        <h1>PAGAMENTO AVULSO</h1>
+        <h2>Placa do veículo</h2>
+        <form id="formConsulta" style="display:flex;flex-direction:column;align-items:center;">
+          <div class="input-wrap">
+            <span class="icon-search"></span>
+            <input id="inputPlaca" type="text" maxlength="8" autocomplete="off">
+          </div>
+          <span class="error" id="erroPlaca"></span>
+          <button type="submit" class="search">CONSULTE SEUS DÉBITOS</button>
+          <div class="div-checkbox">
+            <input type="checkbox" id="cbEstrangeira" style="display:none">
+            <label class="checkbox-label" for="cbEstrangeira"><span class="custom-checkbox" id="boxEstrangeira"></span>Minha placa é estrangeira</label>
+          </div>
+          <div class="div-checkbox">
+            <input type="checkbox" id="cbTermos" style="display:none" checked>
+            <label class="checkbox-label" for="cbTermos"><span class="custom-checkbox checked" id="boxTermos"></span>Estou de acordo com os <a href="#" onclick="return false">Termos e</a><br>Condições de uso <a href="#" onclick="return false">e a Política de Privacidade</a>.</label>
+          </div>
+        </form>
+      </div>
+      <div id="viewResultado" class="results-view" style="display:none;width:100%;"></div>
+      <div id="viewLoading" class="view-loading" style="display:none;">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+<!-- card cadastro -->
+    <div class="card-sign-in">
+      <div style="text-align:center"><h1 class="title">PAGAMENTO COM CADASTRO</h1></div>
+      <div class="info-text vertical-orientation-center">
+        <div class="benefits-row">
+          <div class="benefits-icons">
+            <img src="assets/images/icons/icone-Acompanhe-os-seus-débitos.png" alt="Acompanhe seus débitos">
+            <img src="assets/images/icons/icone-Consulte-o-histórico-de-pagamentos.png" alt="Consulte histórico">
+            <img src="assets/images/icons/icone-Cadastre-seus-veículos.png" alt="Cadastre seus veículos">
+          </div>
+          <div class="benefits-texts">
+            <p>Acompanhe os <strong>seus débitos</strong></p>
+            <p>Consulte o <strong>histórico de pagamentos</strong></p>
+            <p>Cadastre <strong>seus veículos</strong></p>
+          </div>
+        </div>
+      </div>
+      <button class="create-account" onclick="return false"><span class="btn-content"><strong class="big-text">CRIAR CONTA</strong><img class="icon" src="assets/images/icons/icone-criar-conta.png" alt=""></span></button>
+      <button class="login" onclick="return false"><span class="btn-content"><strong class="big-text">ENTRAR</strong><img class="icon" src="assets/images/icons/icone-botao-entrar.png" alt=""></span></button>
+      <div class="terms">
+        <p>Ao criar, você aceita os <a href="#" onclick="return false"><strong>Termos e Condições de uso.</strong></a></p>
+        <p>Você poderá cancelar quando quiser.</p>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<!-- ================= BENEFITS ================= -->
+<div class="benefits">
+  <div class="benefit-card">
+    <img class="icon" src="assets/images/icons/Icone-facilidade1.png" alt="Facilidade">
+    <div class="title">FACILIDADE</div>
+    <div class="content">Ao criar uma conta você terá a opção de <strong>adicionar créditos</strong>, garantindo que o <strong>pagamento</strong> seja feito <strong>automaticamente</strong></div>
+  </div>
+  <div class="benefit-card">
+    <img class="icon" src="assets/images/icons/Icone-alertas1.png" alt="Alertas">
+    <div class="title">ALERTAS</div>
+    <div class="content">Pelo <strong>app</strong>, você recebe <strong>notificações</strong> sempre que uma <strong>cobrança</strong>, é gerada</div>
+  </div>
+  <div class="benefit-card">
+    <img class="icon" src="assets/images/icons/icone-sem-filas1.png" alt="Sem filas">
+    <div class="title">SEM FILAS</div>
+    <div class="content">Com o <strong>pedágio eletrônico</strong>, você passa <strong>sem parar</strong>, garantindo viagens mais <strong>rápidas</strong> e <strong>fluidas</strong></div>
+  </div>
+</div>
+
+<!-- ================= DOWNLOAD APP ================= -->
+<div class="download-app">
+  <h1>BAIXE AGORA O APP</h1>
+  <p>Faça o <strong>download</strong> do aplicativo para acompanhar e efetuar pagamento dos seus débitos diretamente no celular.</p>
+  <div class="store-badges">
+    <img src="assets/images/icons/App-Store-botao.png" alt="App Store">
+    <img src="assets/images/icons/Googlepaly-botao.png" alt="Google Play">
+  </div>
+</div>
+
+<!-- ================= COMO FUNCIONA ================= -->
+<div class="info-section" id="como-funciona">
+  <div class="txt">
+    <h1>COMO FUNCIONA?</h1>
+    <p>O <strong>Pedágio Eletrônico</strong> funciona por meio de equipamentos de monitoramento instalado no pórtico com capacidade de identificar <strong>100% das passagens</strong> seja por <strong>TAG</strong> ou <strong>leitura de placa.</strong></p>
+  </div>
+  <img src="assets/images/pictures/img-ilustrativa-como-funciona.png" alt="passagem portal">
+</div>
+
+<!-- ================= FAQ ================= -->
+<div class="faq">
+  <div class="title">
+    <h1>PERGUNTAS FREQUENTES</h1>
+    <h3>Confira as principais dúvidas referentes ao Pedágio Eletrônico</h3>
+  </div>
+  <details><summary>Quais são as formas de pagamento do Pedágio Eletrônico?</summary><div class="ans">Existem quatro formas de pagamento: Se você possuir a TAG de pagamento automático, não se preocupe. O valor será debitado automaticamente na sua fatura. Mas, se não tiver, você pode pagar de modo online direto pelo nosso site ou baixar nosso app, ou pode pagar presencialmente dos nossos totens de autoatendimento localizados em nossas bases. E ainda tem mais: todas as praças de pedágio físicas da EPR estão aptas a receber o valor da tarifa referente ao Pedágio Eletrônico, basta consultar com o nosso operador se há alguma passagem em aberto e efetuar o pagamento em dinheiro ou cartão de crédito ou débito.</div></details>
+  <details><summary>A EPR envia boletos de cobrança?</summary><div class="ans">Não. A EPR não envia boletos aos usuários. Fique atento a possíveis golpes e sempre utilize apenas os canais oficiais da concessionária.</div></details>
+  <details><summary>Como posso adquirir uma TAG?</summary><div class="ans">Por meio do site de empresas fornecedoras ou através de algum banco de sua confiança.</div></details>
+  <details><summary>Qual é o prazo de pagamento da tarifa?</summary><div class="ans">Você tem até 30 dias para efetuar o pagamento após a passagem do veículo pelo pórtico.</div></details>
+  <details><summary>Como posso consultar meus débitos de passagens no Pedágio Eletrônico?</summary><div class="ans">Caso já tenha o veículo cadastrado no site, basta fazer o login para visualizar o histórico de passagens e tarifas quitadas e pendentes. Caso não esteja cadastrado, efetue ele aqui.</div></details>
+  <details><summary>A EPR irá me multar caso não pague a tarifa?</summary><div class="ans">A EPR não emite multas. Os órgãos responsáveis pela fiscalização têm acesso as informações e passagens realizadas pelos pórticos do Pedágio Eletrônico e poderão emitir multas caso o pagamento da tarifa não seja realizado no prazo de 30 dias.</div></details>
+  <details><summary>Fui multado por evasão de cobrança de pedágio. Ainda preciso pagar a tarifa?</summary><div class="ans">Sim. A evasão de cobrança de pedágio é uma infração grave e a multa será emitida e enviada pelo órgão responsável pela fiscalização. O valor devido da tarifa permanece em aberto até a sua quitação junto à concessionária.</div></details>
+  <details><summary>Posso solicitar resgate do saldo pré-pago que não utilizei?</summary><div class="ans">É possível, basta entrar em contato com a ouvidoria da concessionária. Em caso de solicitação de resgate do saldo pré-pago não utilizado, o valor devido sofrerá o desconto de custos financeiros conforme a modalidade:<br>• Se Pessoa Física (CPF) - desconto de 2,95% sobre o saldo resgatado;<br>• Se Pessoa Jurídica (CNPJ) - desconto de 2,95% sobre o saldo resgatado acrescido de R$ 0,50 (Cinquenta Centavos de Real).</div></details>
+  <details><summary>Como entrar em contato com as concessionárias do Grupo EPR que tem Pedágio Eletrônico?</summary><div class="ans">EPR Sul de Minas – <a href="https://www.eprsuldeminas.com.br" target="_blank">www.eprsuldeminas.com.br</a><br>EPR Iguaçu – <a href="https://www.epriguacu.com.br" target="_blank">www.epriguacu.com.br</a><br>EPR Paraná – <a href="https://www.eprparana.com.br" target="_blank">www.eprparana.com.br</a></div></details>
+</div>
+
+<div class="sign-in-wrap">
+  <button class="sign-in" onclick="return false"><span class="btn-content"><strong>CADASTRE-SE AGORA</strong></span></button>
+</div>
+
+<div class="hand-banner"><img src="assets/images/pictures/img-mao-celular.png" alt="App EPR"></div>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer-body">
+  <div class="logo"><img src="assets/images/pictures/Logo-EPR-rodapé.png" alt="EPR"></div>
+  <div class="infos">
+    <a href="#"><img src="assets/images/icons/icons-information.png" alt="">Quem somos</a>
+    <a href="#"><img src="assets/images/icons/icon-integridade.png" alt="">Integridade</a>
+    <div class="concessionaire-info">
+      <span>EPR Participações S.A. | CNPJ: 48.803.906/0001-70</span>
+      <span>Av. Brig. Faria Lima, nº 1188, 2º andar</span>
+      <span>CEP 01451-001 – São Paulo</span>
+    </div>
+    <div class="social-media">
+      <p>Nossas Redes Sociais</p>
+      <div class="social-media-links">
+        <a href="#" onclick="return false"><img src="assets/images/icons/icone-linkedin.svg" alt="LinkedIn"></a>
+        <a href="#" onclick="return false"><img src="assets/images/icons/icone-instagram.svg" alt="Instagram"></a>
+        <a href="#" onclick="return false"><img src="assets/images/icons/icone-youtube.svg" alt="YouTube"></a>
+        <a href="#" onclick="return false"><img src="assets/images/icons/icone-facebook.svg" alt="Facebook"></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const PLACA_RE = /^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$/;
+const norm = v => v.toUpperCase().replace(/[^A-Z0-9]/g,'');
+const brl = v => Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+function dtBR(s){
+  if(!s) return '-';
+  const m = s.match(/(\d{4})-(\d{2})-(\d{2})/);
+  return m ? m[3]+'/'+m[2]+'/'+m[1] : s;
+}
+const ICO = {
+  concessionaria: 'assets/images/icons/highway.svg',
+  praca: 'assets/images/icons/localizacao.svg',
+  data: 'assets/images/icons/data_passagem.svg',
+  valor: 'assets/images/icons/pagamento.svg'
+};
+
+let DADOS = null, PLACA_ATUAL = null;
+fetch('exportacao.json?_='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{ DADOS=d; }).catch(()=>{ DADOS=[]; });
+
+const burgerBtn = document.getElementById('burgerBtn');
+const mobileMenu = document.getElementById('mobileMenu');
+if(burgerBtn && mobileMenu){
+  burgerBtn.addEventListener('click', ()=>{
+    mobileMenu.style.display = mobileMenu.style.display === 'block' ? 'none' : 'block';
+  });
+  document.addEventListener('click', (e)=>{
+    if(!burgerBtn.contains(e.target) && !mobileMenu.contains(e.target)){
+      mobileMenu.style.display = 'none';
+    }
+  });
+}
+
+function bindCheck(inputId, boxId){
+  const inp = document.getElementById(inputId), box = document.getElementById(boxId);
+  inp.addEventListener('change', ()=> box.classList.toggle('checked', inp.checked));
+}
+bindCheck('cbEstrangeira','boxEstrangeira');
+bindCheck('cbTermos','boxTermos');
+
+document.getElementById('formConsulta').addEventListener('submit', e=>{
+  e.preventDefault();
+  const placa = norm(document.getElementById('inputPlaca').value);
+  const inp = document.getElementById('inputPlaca');
+  const erro = document.getElementById('erroPlaca');
+
+  if(!PLACA_RE.test(placa)){
+    inp.classList.add('red-input');
+    erro.textContent = 'Insira um valor de placa válido.';
+    return;
+  }
+  inp.classList.remove('red-input');
+  erro.textContent = '';
+  if(!DADOS){ erro.textContent='Base de dados não carregada. Tente novamente.'; return; }
+
+  PLACA_ATUAL = placa;
+  const item = DADOS.find(x=>x.placa===placa);
+  document.getElementById('viewBusca').style.display='none';
+  document.getElementById('viewResultado').style.display='none';
+  const vl = document.getElementById('viewLoading');
+  vl.style.display='flex';
+  setTimeout(()=>{ vl.style.display='none'; renderResultados(item); }, 2000);
+});
+
+function renderResultados(item){
+  document.getElementById('viewBusca').style.display='none';
+  const view = document.getElementById('viewResultado');
+  view.style.display='block';
+
+  if(!item){
+    view.innerHTML =
+      '<h1>PENDÊNCIAS<button class="close-x" onclick="voltarBusca()">&times;</button></h1>'+
+      '<div class="empty-state">'+
+        '<img src="assets/images/icons/icone_nenhuma_pendencia.svg">'+
+        '<p>Não existem pendências para essa placa no momento.</p>'+
+      '</div>'+
+      '';
+    return;
+  }
+
+  let html = '<h1>PENDÊNCIAS<button class="close-x" onclick="voltarBusca()">&times;</button></h1><div class="ticket-list">';
+  item.pendencias.map((p,i)=>[p,i]).reverse().forEach(([p,idx])=>{
+    const emRevisao = (p.highway_status||p.status||'')==='IN_REVIEW';
+    html += '<div class="ticket" data-idx="'+idx+'">';
+    html += '<div class="head"><span class="ident">Identificador: '+(p.ticket_code||'-')+'</span>'+
+            '<span class="custom-checkbox sel-box"></span></div>';
+    if(p.concessionaria)
+      html += '<div class="linha"><img src="'+ICO.concessionaria+'"><span class="txt">'+p.concessionaria+'</span></div>';
+    html += '<div class="linha"><img src="'+ICO.praca+'"><span class="txt">'+(p.praca||'-')+'</span></div>';
+    html += '<div class="linha"><img src="'+ICO.data+'"><span class="txt">'+dtBR(p.data_passagem)+'</span></div>';
+    if(emRevisao){
+      html += '<span class="status-chip">'+(p.status_titulo||'EM REVISÃO')+'</span>';
+    } else {
+      html += '<div class="linha"><img src="'+ICO.valor+'"><span class="txt valor">'+brl(p.valor)+'</span></div>';
+    }
+    html += '</div>';
+  });
+  html += '</div>';
+  html += '<div class="total-row"><div class="total-area"><h4>Valor total:</h4><h3 id="valorTotal"></h3></div>'+
+
+          '<button class="btn-next" id="btnProximo">MARCAR TODAS</button>'+
+          '</div>'+
+          '<div class="msg" id="msgRes"></div>';
+  view.innerHTML = html;
+
+  const lista = view.querySelector('.ticket-list');
+  lista.querySelectorAll('.ticket').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      t.querySelector('.sel-box').classList.toggle('checked');
+      atualizarTotal(item);
+      atualizarBotao();
+    });
+  });
+  atualizarTotal(item);
+  atualizarBotao();
+
+  view.querySelector('#btnProximo').addEventListener('click', ()=>{
+    const marc = view.querySelectorAll('.ticket .sel-box.checked');
+    const msg = view.querySelector('#msgRes');
+    if(marc.length===0){ view.querySelectorAll('.ticket .sel-box').forEach(b=>b.classList.add('checked')); atualizarTotal(item); atualizarBotao(); return; }
+    mostrarRecibo(item);
+  });
+}
+
+function mostrarRecibo(item){
+  const view = document.getElementById('viewResultado');
+  const card = document.getElementById('cardBusca');
+  card.style.minHeight = card.offsetHeight + 'px';
+  window._ultimoItem = item;
+  window._itensSel = [...view.querySelectorAll('.ticket .sel-box.checked')].map(b=>+b.closest('.ticket').dataset.idx);
+  view.innerHTML =
+    '<div class="receipt-view">'+
+      '<div class="receipt-head"><h1>RECIBO</h1><button class="receipt-close" onclick="voltarBusca()"><img src="assets/images/icons/botao_fechar_2.svg" alt=""></button></div>'+
+      '<p class="receipt-desc">Informe seu email para receber o recibo do pagamento:</p>'+
+      '<div class="email-wrap"><input type="email" id="emailRecibo" autocomplete="email"><span class="icon-email"></span></div>'+
+      '<span class="receipt-error" id="emailErro"></span>'+
+      '<div class="div-email-checkbox"><input type="checkbox" id="cbSemRecibo" style="display:none"><label class="checkbox-label" for="cbSemRecibo"><span class="custom-checkbox" id="boxSemRecibo"></span>Não quero receber o recibo.</label></div>'+
+      '<button class="pix-payment" id="btnPix">PAGAR COM PIX</button>'+
+      '<button class="card-payment" id="btnCartao">PAGAR COM CRÉDITO</button>'+
+    '</div>';
+
+  document.getElementById('cbSemRecibo').addEventListener('change', e=>{
+    document.getElementById('boxSemRecibo').classList.toggle('checked', e.target.checked);
+  });
+
+  const validar = ()=>{
+    const semRecibo = document.getElementById('cbSemRecibo').checked;
+    const email = document.getElementById('emailRecibo').value.trim();
+    const ok = semRecibo || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const inp = document.getElementById('emailRecibo');
+    const erro = document.getElementById('emailErro');
+    if(!ok){
+      inp.classList.add('red-input');
+      erro.textContent = 'Insira um email válido';
+      setTimeout(()=>{ erro.textContent=''; inp.classList.remove('red-input'); }, 5000);
+      return false;
+    }
+    return true;
+  };
+
+  const erroHtml = msg =>
+    '<div class="receipt-processing"><p>'+msg+'</p>'+
+    '<button onclick="renderResultados(window._ultimoItem)">VOLTAR</button></div>';
+
+  const processar = ()=>{
+    if(!validar()) return;
+    const itens = (window._itensSel||[]).map(idx=>({idx}));
+    const email = document.getElementById('cbSemRecibo').checked ? '' : document.getElementById('emailRecibo').value.trim();
+    view.innerHTML = '<div class="receipt-processing"><h2>Gerando seu PIX...</h2><div class="spinner"></div></div>';
+    fetch('api/pagamento/criar',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({placa: PLACA_ATUAL, itens, email})
+    }).then(r=>r.json()).then(res=>{
+      if(!res.ok){ view.innerHTML = erroHtml(res.message||'Não foi possível gerar o PIX.'); return; }
+      mostrarPix(res, email);
+    }).catch(()=>{ view.innerHTML = erroHtml('Falha de conexão com o servidor.'); });
+  };
+
+  const mostrarPix = (res, email)=>{
+    view.innerHTML =
+      '<div class="pix-screen">'+
+        '<h2>Pague com PIX</h2>'+
+        (res.qr?'<img class="qr" src="'+res.qr+'" alt="QR Code PIX">':'')+
+        '<p class="valor-pix">'+brl(res.valor)+'</p>'+
+        (res.copia_cola?'<button class="copia-btn" id="btnCopia">COPIAR CÓDIGO PIX</button>':'')+
+        '<p class="aguardando" id="pixStatus">Aguardando pagamento...</p>'+
+        '<div class="spinner sm" id="pixSpin" style="display:none"></div>'+
+      '</div>';
+    const copia = res.copia_cola||'';
+    const btnCopia = document.getElementById('btnCopia');
+    if(btnCopia) btnCopia.addEventListener('click', ()=>{
+      navigator.clipboard.writeText(copia).then(()=>{
+        btnCopia.textContent='CÓDIGO COPIADO!';
+        setTimeout(()=>{ btnCopia.textContent='COPIAR CÓDIGO PIX'; }, 2000);
+      });
+    });
+    const tid = res.transactionId;
+    const poll = setInterval(()=>{
+      fetch('api/pagamento/status?transactionId='+encodeURIComponent(tid))
+        .then(r=>r.json()).then(st=>{
+          if(st.status==='paid'){
+            clearInterval(poll);
+            view.innerHTML =
+              '<div class="receipt-processing">'+
+                '<h2>Pagamento confirmado!</h2>'+
+                '<p>'+(email?('O recibo será enviado para '+email+'.'):'Obrigado pela preferência!')+'</p>'+
+                '<button onclick="voltarBusca()">CONCLUIR</button>'+
+              '</div>';
+          } else if(st.status==='expired'||st.status==='failed'){
+            clearInterval(poll);
+            view.innerHTML = erroHtml('O PIX expirou ou falhou. Gere um novo para tentar novamente.');
+          }
+        }).catch(()=>{});
+    }, 5000);
+    setTimeout(()=>{ clearInterval(poll); }, 15*60*1000);
+  };
+
+  document.getElementById('btnPix').addEventListener('click', processar);
+  document.getElementById('btnCartao').addEventListener('click', processar);
+}
+
+function atualizarTotal(item){
+  const view = document.getElementById('viewResultado');
+  const marc = view.querySelectorAll('.ticket .sel-box.checked');
+  let total = 0;
+  marc.forEach(b=>{ total += Number(item.pendencias[+b.closest('.ticket').dataset.idx].valor)||0; });
+
+  view.querySelector('#valorTotal').textContent = brl(total);
+}
+
+function atualizarBotao(){
+  const view = document.getElementById('viewResultado');
+  const btn = view.querySelector('#btnProximo');
+  if(!btn) return;
+  const n = view.querySelectorAll('.ticket .sel-box.checked').length;
+  if(n>0){ btn.textContent='PRÓXIMO'; btn.classList.add('pronto'); }
+  else { btn.textContent='MARCAR TODAS'; btn.classList.remove('pronto'); }
+}
+
+function voltarBusca(){
+  document.getElementById('cardBusca').style.minHeight='';
+  document.getElementById('viewResultado').style.display='none';
+  document.getElementById('viewResultado').innerHTML='';
+  document.getElementById('viewLoading').style.display='none';
+  document.getElementById('viewBusca').style.display='flex';
+}
+</script>
+<div class="recaptcha-badge"><svg width="56" height="56" viewBox="8 4 134 104" xmlns="http://www.w3.org/2000/svg"><g transform="translate(75 56) scale(1.3) translate(-75 -56)"><path d="m117 62.063c-2e-3 -0.60232-0.0159-1.2014-0.0429-1.7976v-33.991l-9.3971 9.3971c-7.691-9.4141-19.391-15.427-32.496-15.427-13.638 0-25.754 6.5097-33.413 16.591l15.403 15.565c1.5095-2.7917 3.6539-5.1895 6.2395-7.0005 2.6891-2.0985 6.4993-3.8143 11.77-3.8143 0.63674 0 1.1282 0.0744 1.4893 0.21458 6.5304 0.51543 12.191 4.1194 15.524 9.3503l-10.903 10.903c13.81-0.0542 29.411-0.086 35.825 7e-3" style="fill:#1c3aa9"/><path d="m74.819 20.246c-0.60232 2e-3 -1.2014 0.0159-1.7976 0.0429h-33.991l9.3971 9.3971c-9.4141 7.691-15.427 19.391-15.427 32.496 0 13.638 6.5098 25.754 16.591 33.413l15.565-15.403c-2.7917-1.5095-5.1895-3.6539-7.0005-6.2395-2.0984-2.6891-3.8143-6.4993-3.8143-11.77 0-0.63674 0.0744-1.1282 0.21458-1.4893 0.51543-6.5304 4.1194-12.191 9.3503-15.524l10.903 10.903c-0.0542-13.81-0.0861-29.411 7e-3 -35.825" style="fill:#4285f4"/><path d="m33.002 62.181c2e-3 0.60232 0.0159 1.2014 0.0429 1.7976v33.991l9.3971-9.3971c7.691 9.4141 19.391 15.427 32.496 15.427 13.638 0 25.754-6.5097 33.413-16.591l-15.403-15.565c-1.5095 2.7917-3.6539 5.1895-6.2395 7.0005-2.6891 2.0985-6.4993 3.8143-11.77 3.8143-0.63674 0-1.1282-0.0744-1.4893-0.21458-6.5304-0.51543-12.191-4.1194-15.524-9.3503l10.903-10.903c-13.81 0.0542-29.411 0.086-35.825-7e-3" style="fill:#ababab"/></g></svg></div>
+</body>
+</html>

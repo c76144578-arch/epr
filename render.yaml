@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: placas-pagamento
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SITE_DIR
+        value: site
+      - key: SAFIPAY_CLIENT_ID
+        sync: false
+      - key: SAFIPAY_CLIENT_SECRET
+        sync: false
+      - key: SAFIPAY_WEBHOOK_SECRET
+        sync: false
