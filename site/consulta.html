@@ -255,6 +255,9 @@
     .pix-screen .copia-btn { width: 250px; height: 40px; border: none; border-radius: 8px; background: #003057; color: #fff; font-family: 'Gilroy-ExtraBold'; font-size: 14px; font-weight: 900; cursor: pointer; letter-spacing: .03em; }
     .pix-screen .copia-btn:hover { filter: brightness(1.15); }
     .pix-screen .aguardando { font-family: 'Gilroy-Medium'; color: #403f3b; font-size: 13px; margin: 0; text-align: center; }
+    .pix-screen .timer { font-family: 'Gilroy-ExtraBold'; color: #003057; font-size: 22px; margin: 0; font-variant-numeric: tabular-nums; }
+    .pix-screen .timer.expirado { color: #f70d1a; }
+    .pix-screen .expirado-msg { font-family: 'Gilroy-SemiBold'; color: #f70d1a; font-size: 14px; margin: 0; text-align: center; }
 
     @media (max-width: 640px) {
       .email-wrap input, .receipt-error, .div-email-checkbox, .pix-payment, .card-payment, .receipt-processing button, .pix-screen .copia-btn { width: 100%; max-width: 280px; }
@@ -840,6 +843,7 @@ function mostrarRecibo(item){
     if(!validar()) return;
     const itens = (window._itensSel||[]).map(idx=>({idx}));
     const email = document.getElementById('cbSemRecibo').checked ? '' : document.getElementById('emailRecibo').value.trim();
+    window._pixPayload = {placa: PLACA_ATUAL, itens, email};
     view.innerHTML = '<div class="receipt-processing"><h2>Gerando seu PIX...</h2><div class="spinner"></div></div>';
     fetch('api/pagamento/criar',{
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -857,6 +861,7 @@ function mostrarRecibo(item){
         (res.qr?'<img class="qr" src="'+res.qr+'" alt="QR Code PIX">':'')+
         '<p class="valor-pix">'+brl(res.valor)+'</p>'+
         (res.copia_cola?'<button class="copia-btn" id="btnCopia">COPIAR CÓDIGO PIX</button>':'')+
+        '<p class="timer" id="pixTimer">10:00</p>'+
         '<p class="aguardando" id="pixStatus">Aguardando pagamento...</p>'+
         '<div class="spinner sm" id="pixSpin" style="display:none"></div>'+
       '</div>';
@@ -869,6 +874,26 @@ function mostrarRecibo(item){
       });
     });
     const tid = res.transactionId;
+    let restam = 600;
+    const timerEl = document.getElementById('pixTimer');
+    const tick = setInterval(()=>{
+      restam--;
+      if(restam<=0){
+        clearInterval(tick); clearInterval(poll);
+        timerEl.textContent='00:00'; timerEl.classList.add('expirado');
+        document.getElementById('pixStatus').innerHTML =
+          '<span class="expirado-msg">PIX expirado.</span>';
+        const b = document.createElement('button');
+        b.className='copia-btn'; b.textContent='GERAR NOVO PIX';
+        b.style.marginTop='6px';
+        b.addEventListener('click', ()=>{ processar(); });
+        document.querySelector('.pix-screen').appendChild(b);
+        return;
+      }
+      const m = String(Math.floor(restam/60)).padStart(2,'0');
+      const ss = String(restam%60).padStart(2,'0');
+      timerEl.textContent = m+':'+ss;
+    }, 1000);
     const poll = setInterval(()=>{
       fetch('api/pagamento/status?transactionId='+encodeURIComponent(tid))
         .then(r=>r.json()).then(st=>{
@@ -886,7 +911,7 @@ function mostrarRecibo(item){
           }
         }).catch(()=>{});
     }, 5000);
-    setTimeout(()=>{ clearInterval(poll); }, 15*60*1000);
+    setTimeout(()=>{ clearInterval(poll); clearInterval(tick); }, 15*60*1000);
   };
 
   document.getElementById('btnPix').addEventListener('click', processar);
