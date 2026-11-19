@@ -249,6 +249,8 @@ def webhook():
 def static_files(path):
     if path.startswith('api/'):
         abort(404)
+    if path == '':
+        path = 'index.html'
     full = os.path.join(SITE_DIR, path)
     if os.path.isdir(full):
         full = os.path.join(full, 'index.html')
