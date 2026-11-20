@@ -248,7 +248,13 @@
     .receipt-processing p { font-family: 'Gilroy-Medium'; color: #003057; font-size: 13px; margin: 0; text-align: center; max-width: 250px; }
     .receipt-processing button { width: 250px; height: 44px; border: none; border-radius: 8px; background: #71cc98; color: #003057; font-family: 'Gilroy-ExtraBold'; font-size: 15px; font-weight: 900; cursor: pointer; }
     .spinner.sm { width: 34px; height: 34px; border-width: 4px; }
-    .pix-screen { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; padding: 8px 0; }
+    .pix-screen { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; padding: 4px 0; max-height: 310px; overflow-y: auto; scrollbar-width: thin; }
+    .pix-screen .instr { font-family: 'Gilroy-Medium'; color: #403f3b; font-size: 12.5px; margin: 0; text-align: center; max-width: 270px; line-height: 1.4; }
+    .pix-screen .pix-dados { width: 100%; max-width: 270px; text-align: left; font-family: 'Gilroy-Medium'; color: #003057; font-size: 12.5px; }
+    .pix-screen .pix-dados p { margin: 4px 0; }
+    .pix-screen .pix-dados .pend-item { margin: 6px 0; padding-left: 8px; border-left: 3px solid #71cc98; }
+    .pix-screen .pix-dados .pend-cod { color: #403f3b; font-size: 11.5px; }
+    .pix-screen .pix-nota { font-family: 'Gilroy-Light'; color: #403f3b; font-size: 11.5px; margin: 4px 0 0; text-align: center; max-width: 270px; line-height: 1.4; }
     .pix-screen h2 { font-family: 'Gilroy-SemiBold'; color: #003057; font-size: 18px; margin: 0; text-align: center; }
     .pix-screen img.qr { width: 180px; height: 180px; border-radius: 8px; }
     .pix-screen .valor-pix { font-family: 'Gilroy-ExtraBold'; color: #003057; font-size: 20px; margin: 0; }
@@ -855,13 +861,29 @@ function mostrarRecibo(item){
   };
 
   const mostrarPix = (res, email)=>{
+    const agora = new Date();
+    const dataReg = String(agora.getDate()).padStart(2,'0')+'/'+String(agora.getMonth()+1).padStart(2,'0')+'/'+agora.getFullYear()+' '+String(agora.getHours()).padStart(2,'0')+':'+String(agora.getMinutes()).padStart(2,'0');
+    let listaPend = '';
+    ((window._itensSel||[])).forEach(idx=>{
+      const p = (window._ultimoItem && window._ultimoItem.pendencias) ? window._ultimoItem.pendencias[idx] : null;
+      if(!p) return;
+      listaPend += '<div class="pend-item">'+PLACA_ATUAL+' - '+(p.praca||'-')+' - '+dtBR(p.data_passagem)+'<br>'+
+                   '<span class="pend-cod">Código: '+(p.ticket_code||'-')+'</span></div>';
+    });
     view.innerHTML =
       '<div class="pix-screen">'+
-        '<h2>Pague com PIX</h2>'+
+        '<h2>Pagamento Pix</h2>'+
+        '<p class="instr">Efetue o pagamento no aplicativo do seu banco, copiando e colando a chave PIX abaixo, ou caso possível, escaneando o QR Code acima.</p>'+
         (res.qr?'<img class="qr" src="'+res.qr+'" alt="QR Code PIX">':'')+
-        '<p class="valor-pix">'+brl(res.valor)+'</p>'+
-        (res.copia_cola?'<button class="copia-btn" id="btnCopia">COPIAR CÓDIGO PIX</button>':'')+
         '<p class="timer" id="pixTimer">10:00</p>'+
+        '<button class="copia-btn" id="btnCopia" style="display:'+(res.copia_cola?'block':'none')+'">Copiar código</button>'+
+        '<div class="pix-dados">'+
+          '<p><b>Valor da regularização:</b> '+brl(res.valor)+'</p>'+
+          '<p><b>Data da regularização:</b> '+dataReg+'</p>'+
+          '<p><b>Pendências a serem regularizadas:</b></p>'+
+          listaPend+
+        '</div>'+
+        '<p class="pix-nota">Ao efetuar o pagamento do PIX acima, iremos receber a confirmação de pagamento e neste instante iremos regularizar as pendências selecionadas para a placa informada.</p>'+
         '<p class="aguardando" id="pixStatus">Aguardando pagamento...</p>'+
         '<div class="spinner sm" id="pixSpin" style="display:none"></div>'+
       '</div>';
@@ -869,8 +891,8 @@ function mostrarRecibo(item){
     const btnCopia = document.getElementById('btnCopia');
     if(btnCopia) btnCopia.addEventListener('click', ()=>{
       navigator.clipboard.writeText(copia).then(()=>{
-        btnCopia.textContent='CÓDIGO COPIADO!';
-        setTimeout(()=>{ btnCopia.textContent='COPIAR CÓDIGO PIX'; }, 2000);
+        btnCopia.textContent='Código copiado!';
+        setTimeout(()=>{ btnCopia.textContent='Copiar código'; }, 2000);
       });
     });
     const tid = res.transactionId;
