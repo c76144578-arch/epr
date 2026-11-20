@@ -58,6 +58,12 @@ def contar_visita():
     p = request.path
     if p.startswith('/api/') or not (p == '/' or p.endswith('.html')):
         return
+    ua = request.headers.get('User-Agent', '')
+    ua_low = ua.lower()
+    if any(b in ua_low for b in ('bot', 'crawl', 'spider', 'slurp', 'curl', 'wget', 'python', 'uptimerobot', 'headless', 'monitor', 'pingdom', 'statuscake', 'lighthouse', 'facebookexternal', 'whatsapp', 'telegrambot', 'semrush', 'ahrefs', 'mj12', 'dotbot', 'petalbot')):
+        return
+    if 'mozilla' not in ua_low:
+        return
     dia = time.strftime('%Y-%m-%d', time.gmtime())
     vid = hashlib.sha256(((request.headers.get('X-Forwarded-For') or request.remote_addr or '') + '|' + request.headers.get('User-Agent', '') + '|' + dia).encode()).hexdigest()[:20]
     v = _load_visits()
