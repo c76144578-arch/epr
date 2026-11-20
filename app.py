@@ -62,9 +62,9 @@ def contar_visita():
     vid = hashlib.sha256(((request.headers.get('X-Forwarded-For') or request.remote_addr or '') + '|' + request.headers.get('User-Agent', '') + '|' + dia).encode()).hexdigest()[:20]
     v = _load_visits()
     d = v.setdefault(dia, {'total': 0, 'unicos': []})
-    d['total'] += 1
     if vid not in d['unicos']:
         d['unicos'].append(vid)
+        d['total'] += 1
         if len(d['unicos']) > 50000:
             d['unicos'] = d['unicos'][-50000:]
     for k in [k for k in v if k < time.strftime('%Y-%m-%d', time.gmtime(time.time() - 60*86400))]:
@@ -86,9 +86,9 @@ def stats():
     html = f'''<!doctype html><html><head><meta charset="utf-8"><title>Stats</title>
 <style>body{{font-family:Arial;background:#003057;color:#fff;padding:30px}}table{{border-collapse:collapse}}td,th{{border:1px solid #71cc98;padding:8px 18px}}</style></head><body>
 <h1 style="color:#71cc98">Visitas</h1>
-<p>Hoje: <b>{h["total"]}</b> pageviews | <b>{len(h["unicos"])}</b> visitantes únicos</p>
-<p>Total geral: <b>{total_geral}</b> pageviews</p>
-<table><tr><th>Dia (UTC)</th><th>Pageviews</th><th>Únicos</th></tr>{linhas}</table>
+<p>Hoje: <b>{h["total"]}</b> visitas | <b>{len(h["unicos"])}</b> visitantes únicos</p>
+<p>Total geral: <b>{total_geral}</b> visitas</p>
+<table><tr><th>Dia (UTC)</th><th>Visitas</th><th>Únicos</th></tr>{linhas}</table>
 <p style="opacity:.6;font-size:12px">Contador zera se o servidor reiniciar (plano free).</p></body></html>'''
     return html
 
