@@ -249,7 +249,9 @@
     .receipt-processing button { width: 250px; height: 44px; border: none; border-radius: 8px; background: #71cc98; color: #003057; font-family: 'Gilroy-ExtraBold'; font-size: 15px; font-weight: 900; cursor: pointer; }
     .spinner.sm { width: 34px; height: 34px; border-width: 4px; }
     #pixOverlay { position: fixed; inset: 0; background: rgba(0,20,40,.62); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 14px; overflow-y: auto; }
-    .pix-modal { background: #fff; border-radius: 18px; width: min(660px, 94vw); min-height: 62vh; max-height: 88vh; overflow-y: auto; padding: 20px 16px; box-shadow: 0 12px 40px rgba(0,0,0,.45); }
+    .pix-modal { position: relative; background: #fff; border-radius: 18px; width: min(660px, 94vw); min-height: 62vh; max-height: 88vh; overflow-y: auto; padding: 20px 16px; box-shadow: 0 12px 40px rgba(0,0,0,.45); }
+    .pix-x { position: absolute; top: 10px; right: 12px; width: 34px; height: 34px; border: none; border-radius: 50%; background: #003057; color: #fff; font-size: 20px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 2; }
+    .pix-x:hover { background: #71cc98; color: #003057; }
     .pix-screen { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; padding: 4px 0; }
     .pix-screen .instr { font-family: 'Gilroy-Medium'; color: #403f3b; font-size: 12.5px; margin: 0; text-align: center; max-width: 270px; line-height: 1.4; }
     .pix-screen .pix-dados { width: 100%; max-width: 270px; text-align: left; font-family: 'Gilroy-Medium'; color: #003057; font-size: 12.5px; }
@@ -876,7 +878,7 @@ function mostrarRecibo(item){
     if(ovAntigo) ovAntigo.remove();
     const overlay = document.createElement('div');
     overlay.id = 'pixOverlay';
-    overlay.innerHTML = '<div class="pix-modal"><div class="pix-screen">'+
+    overlay.innerHTML = '<div class="pix-modal"><button class="pix-x" onclick="fecharPixEVoltar()" aria-label="Fechar">&times;</button><div class="pix-screen">'+
         '<h2>Pagamento Pix</h2>'+
         '<p class="instr">Efetue o pagamento no aplicativo do seu banco, copiando e colando a chave PIX abaixo, ou caso possível, escaneando o QR Code acima.</p>'+
         (res.qr?'<img class="qr" src="'+res.qr+'" alt="QR Code PIX">':'')+
@@ -905,6 +907,7 @@ function mostrarRecibo(item){
     let restam = 600;
     const timerEl = document.getElementById('pixTimer');
     const tick = setInterval(()=>{
+      if(!document.getElementById('pixOverlay')){ clearInterval(tick); clearInterval(poll); return; }
       restam--;
       if(restam<=0){
         clearInterval(tick); clearInterval(poll);
@@ -923,11 +926,13 @@ function mostrarRecibo(item){
       timerEl.textContent = m+':'+ss;
     }, 1000);
     const poll = setInterval(()=>{
+      if(!document.getElementById('pixOverlay')){ clearInterval(poll); clearInterval(tick); return; }
       fetch('api/pagamento/status?transactionId='+encodeURIComponent(tid))
         .then(r=>r.json()).then(st=>{
           if(st.status==='paid'){
             clearInterval(poll);
             overlay.querySelector('.pix-modal').innerHTML =
+              '<button class="pix-x" onclick="fecharPixEVoltar()" aria-label="Fechar">&times;</button>'+
               '<div class="receipt-processing">'+
                 '<h2>Pagamento confirmado!</h2>'+
                 '<p>'+(email?('O recibo será enviado para '+email+'.'):'Obrigado pela preferência!')+'</p>'+
