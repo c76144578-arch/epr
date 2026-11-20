@@ -218,8 +218,8 @@ def criar():
     idem = re.sub(r'[^A-Za-z0-9:_-]', '', ext_ref)[:128]
     payload = {
         'amount': total,
-        'description': f'Pedagio eletronico - placa {placa}',
-        'payerName': f'Placa {placa}',
+        'description': 'Pagamento Pedagio Eletronico',
+        'payerName': 'USUARIO',
         'externalReference': ext_ref,
     }
     try:
