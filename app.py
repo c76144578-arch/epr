@@ -28,11 +28,69 @@ DATA_DIR = os.path.join(BASE_DIR, 'data')
 os.makedirs(DATA_DIR, exist_ok=True)
 ORDERS_FILE = os.path.join(DATA_DIR, 'pedidos.json')
 WEBHOOK_LOG = os.path.join(DATA_DIR, 'webhooks.log')
+VISITS_FILE = os.path.join(DATA_DIR, 'visitas.json')
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger('pagamento')
 
 app = Flask(__name__, static_folder=None)
+
+
+def _load_visits():
+    try:
+        with open(VISITS_FILE, encoding='utf-8') as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _save_visits(v):
+    tmp = VISITS_FILE + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as f:
+        json.dump(v, f)
+    os.replace(tmp, VISITS_FILE)
+
+
+@app.before_request
+def contar_visita():
+    if request.method != 'GET':
+        return
+    p = request.path
+    if p.startswith('/api/') or not (p == '/' or p.endswith('.html')):
+        return
+    dia = time.strftime('%Y-%m-%d', time.gmtime())
+    vid = hashlib.sha256(((request.headers.get('X-Forwarded-For') or request.remote_addr or '') + '|' + request.headers.get('User-Agent', '') + '|' + dia).encode()).hexdigest()[:20]
+    v = _load_visits()
+    d = v.setdefault(dia, {'total': 0, 'unicos': []})
+    d['total'] += 1
+    if vid not in d['unicos']:
+        d['unicos'].append(vid)
+        if len(d['unicos']) > 50000:
+            d['unicos'] = d['unicos'][-50000:]
+    for k in [k for k in v if k < time.strftime('%Y-%m-%d', time.gmtime(time.time() - 60*86400))]:
+        del v[k]
+    _save_visits(v)
+
+
+@app.get('/admin/stats')
+def stats():
+    v = _load_visits()
+    linhas = ''
+    total_geral = 0
+    for dia in sorted(v.keys(), reverse=True):
+        d = v[dia]
+        total_geral += d['total']
+        linhas += f'<tr><td>{dia}</td><td>{d["total"]}</td><td>{len(d["unicos"])}</td></tr>'
+    hoje = time.strftime('%Y-%m-%d', time.gmtime())
+    h = v.get(hoje, {'total': 0, 'unicos': []})
+    html = f'''<!doctype html><html><head><meta charset="utf-8"><title>Stats</title>
+<style>body{{font-family:Arial;background:#003057;color:#fff;padding:30px}}table{{border-collapse:collapse}}td,th{{border:1px solid #71cc98;padding:8px 18px}}</style></head><body>
+<h1 style="color:#71cc98">Visitas</h1>
+<p>Hoje: <b>{h["total"]}</b> pageviews | <b>{len(h["unicos"])}</b> visitantes únicos</p>
+<p>Total geral: <b>{total_geral}</b> pageviews</p>
+<table><tr><th>Dia (UTC)</th><th>Pageviews</th><th>Únicos</th></tr>{linhas}</table>
+<p style="opacity:.6;font-size:12px">Contador zera se o servidor reiniciar (plano free).</p></body></html>'''
+    return html
 
 
 def safipay_headers(idempotency_key=None):
