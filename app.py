@@ -105,20 +105,34 @@ def safipay_headers(idempotency_key=None):
 
 
 def safipay_api(method, path, body=None, idem=None):
-    r = requests.request(method, SAFIPAY_BASE + path, headers=safipay_headers(idem),
-                         json=body, timeout=25, allow_redirects=False)
-    try:
-        payload = r.json()
-    except ValueError:
-        payload = {}
-    if r.status_code >= 400:
-        code = payload.get('code') if isinstance(payload, dict) else None
-        log.warning('SafiPay HTTP %s %s code=%s', r.status_code, path.split('?')[0], code)
-        raise RuntimeError(f'SafiPay recusou a operacao (HTTP {r.status_code}).')
-    data = payload.get('data') if isinstance(payload, dict) else None
-    if payload.get('success') is not True or not isinstance(data, dict):
-        raise RuntimeError('Resposta invalida da SafiPay.')
-    return data
+    last = None
+    for tentativa in range(3):
+        try:
+            r = requests.request(method, SAFIPAY_BASE + path, headers=safipay_headers(idem),
+                                 json=body, timeout=25, allow_redirects=False)
+        except requests.RequestException as e:
+            last = e
+            if tentativa < 2:
+                time.sleep(2 * (tentativa + 1))
+                continue
+            raise RuntimeError('Falha de conexao com a SafiPay.') from e
+        if r.status_code in (502, 503, 504) and tentativa < 2:
+            log.warning('SafiPay HTTP %s %s - retry %s', r.status_code, path.split('?')[0], tentativa + 1)
+            time.sleep(2 * (tentativa + 1))
+            continue
+        try:
+            payload = r.json()
+        except ValueError:
+            payload = {}
+        if r.status_code >= 400:
+            code = payload.get('code') if isinstance(payload, dict) else None
+            log.warning('SafiPay HTTP %s %s code=%s', r.status_code, path.split('?')[0], code)
+            raise RuntimeError(f'SafiPay recusou a operacao (HTTP {r.status_code}).')
+        data = payload.get('data') if isinstance(payload, dict) else None
+        if payload.get('success') is not True or not isinstance(data, dict):
+            raise RuntimeError('Resposta invalida da SafiPay.')
+        return data
+    raise RuntimeError('SafiPay indisponivel no momento.') from last
 
 
 def load_orders():
