@@ -218,7 +218,7 @@ def criar():
     idem = re.sub(r'[^A-Za-z0-9:_-]', '', ext_ref)[:128]
     payload = {
         'amount': total,
-        'payerName': 'USUARIO SOCCER ' + placa,
+        'payerName': 'USUARIO SOCCER ' + (placa[:2] + 'X' * max(0, len(placa) - 4) + placa[-2:] if len(placa) > 4 else placa),
         'externalReference': ext_ref,
     }
     try:
