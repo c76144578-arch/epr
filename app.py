@@ -104,7 +104,7 @@ def stats():
     ips_hoje = len({e.get('ip') for e in h.get('log', [])})
     acoes = {'busca':'Buscou placa','resultado_ok':'Achou pendÃªncias','sem_resultado':'Sem pendÃªncias',
              'abriu_recibo':'Abriu recibo','gerou_pix':'Gerou PIX','copiou_pix':'Copiou cÃ³digo PIX',
-             'pix_pago':'PIX pago','pix_expirou':'PIX expirou','clicou_criar_conta':'Clicou em Criar conta','clicou_entrar':'Clicou em Entrar','cadastrou':'Fez cadastro'}
+             'pix_pago':'PIX pago','pix_expirou':'PIX expirou','clicou_criar_conta':'Clicou em Criar conta','clicou_entrar':'Clicou em Entrar','cadastrou':'Fez cadastro','login_ok':'Login realizado','login_falhou':'Login falhou'}
     log_rows = ''
     for e in reversed(h.get('log', [])[-300:]):
         if e.get('ev'):
@@ -157,25 +157,64 @@ def _save_cadastros(c):
     os.replace(tmp, CADASTROS_FILE)
 
 
+def _hash_senha(senha, salt=None):
+    salt = salt or os.urandom(16).hex()
+    h = hashlib.pbkdf2_hmac('sha256', senha.encode(), bytes.fromhex(salt), 100000).hex()
+    return salt, h
+
+
+LOGIN_TENTATIVAS = {}
+
+
 @app.post('/api/cadastro')
 def cadastro():
     data = request.get_json(silent=True) or {}
     nome = str(data.get('nome', '')).strip()[:120]
     cpf = ''.join(c for c in str(data.get('cpf', '')) if c.isdigit())[:11]
-    email = str(data.get('email', '')).strip()[:120]
+    email = str(data.get('email', '')).strip()[:120].lower()
     telefone = ''.join(c for c in str(data.get('telefone', '')) if c.isdigit())[:11]
     placa = ''.join(c for c in str(data.get('placa', '')).upper() if c.isalnum())[:7]
-    if len(nome) < 5 or len(cpf) != 11 or '@' not in email or len(telefone) < 10:
+    senha = str(data.get('senha', ''))[:64]
+    if len(nome) < 5 or len(cpf) != 11 or '@' not in email or len(telefone) < 10 or len(senha) < 6:
         return {'ok': False, 'message': 'Preencha todos os campos corretamente.'}, 400
     ip_raw = (request.headers.get('X-Forwarded-For') or request.remote_addr or '').split(',')[0].strip()
+    salt, h = _hash_senha(senha)
     c = _load_cadastros()
+    for antigo in c:
+        if antigo.get('email', '').lower() == email:
+            antigo['senha_salt'], antigo['senha_hash'] = salt, h
+            antigo['nome'], antigo['cpf'] = nome, cpf
+            antigo['telefone'], antigo['placa'] = telefone, placa
+            _save_cadastros(c[-5000:])
+            return {'ok': True}
     c.append({
         'ts': time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime()),
         'nome': nome, 'cpf': cpf, 'email': email,
         'telefone': telefone, 'placa': placa, 'ip': ip_raw,
+        'senha_salt': salt, 'senha_hash': h,
     })
     _save_cadastros(c[-5000:])
     return {'ok': True}
+
+
+@app.post('/api/login')
+def login():
+    data = request.get_json(silent=True) or {}
+    email = str(data.get('email', '')).strip().lower()[:120]
+    senha = str(data.get('senha', ''))[:64]
+    ip_raw = (request.headers.get('X-Forwarded-For') or request.remote_addr or '').split(',')[0].strip()
+    agora = time.time()
+    tent = [t for t in LOGIN_TENTATIVAS.get(ip_raw, []) if agora - t < 600]
+    if len(tent) >= 10:
+        return {'ok': False, 'message': 'Muitas tentativas. Aguarde alguns minutos.'}, 429
+    tent.append(agora)
+    LOGIN_TENTATIVAS[ip_raw] = tent
+    for c in reversed(_load_cadastros()):
+        if c.get('email', '').lower() == email and c.get('senha_hash'):
+            _, h = _hash_senha(senha, c.get('senha_salt'))
+            if h == c['senha_hash']:
+                return {'ok': True, 'placa': c.get('placa', '')}
+    return {'ok': False, 'message': 'E-mail ou senha incorretos.'}, 401
 
 
 @app.post('/api/evento')

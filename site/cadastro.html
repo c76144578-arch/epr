@@ -99,6 +99,11 @@
       <small id="eTel"></small>
     </div>
     <div class="campo">
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres">
+      <small id="eSenha"></small>
+    </div>
+    <div class="campo">
       <label for="placa">Placa do veículo</label>
       <input id="placa" type="text" maxlength="8" placeholder="ABC1D23" style="text-transform:uppercase">
       <small id="ePlaca"></small>
@@ -146,11 +151,13 @@ $('formCadastro').addEventListener('submit', async e=>{
   const email = $('email').value.trim();
   const tel = soDig($('telefone').value);
   const placa = $('placa').value.trim().toUpperCase();
+  const senha = $('senha').value;
 
   if(nome.length < 5){ marca($('nome'),'eNome'); $('eNome').textContent='Informe seu nome completo.'; } else { limpa('nome'); $('eNome').textContent=''; }
   if(cpf.length !== 11){ marca($('cpf'),'eCpf'); $('eCpf').textContent='CPF inválido.'; } else { limpa('cpf'); $('eCpf').textContent=''; }
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ marca($('email'),'eEmail'); $('eEmail').textContent='E-mail inválido.'; } else { limpa('email'); $('eEmail').textContent=''; }
   if(tel.length < 10 || tel.length > 11){ marca($('telefone'),'eTel'); $('eTel').textContent='Telefone inválido.'; } else { limpa('telefone'); $('eTel').textContent=''; }
+  if(senha.length < 6){ marca($('senha'),'eSenha'); $('eSenha').textContent='Senha deve ter ao menos 6 caracteres.'; } else { limpa('senha'); $('eSenha').textContent=''; }
   if(!placa){ marca($('placa'),'ePlaca'); $('ePlaca').textContent='Informe a placa do veículo.'; }
   else if(!PLACA_RE.test(placa)){ marca($('placa'),'ePlaca'); $('ePlaca').textContent='Placa inválida.'; } else { limpa('placa'); $('ePlaca').textContent=''; }
   if(!ok) return;
@@ -159,7 +166,7 @@ $('formCadastro').addEventListener('submit', async e=>{
   try{
     const r = await fetch('api/cadastro', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({nome, cpf, email, telefone: tel, placa})
+      body: JSON.stringify({nome, cpf, email, telefone: tel, placa, senha})
     });
     const res = await r.json();
     if(res.ok){
