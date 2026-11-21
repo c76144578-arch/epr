@@ -703,7 +703,15 @@ const ICO = {
 };
 
 let DADOS = null, PLACA_ATUAL = null;
-fetch('exportacao.json?_='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{ DADOS=d; }).catch(()=>{ DADOS=[]; });
+fetch('exportacao.json?_='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(d=>{
+  DADOS=d;
+  const qp = new URLSearchParams(location.search).get('placa');
+  if(qp){
+    const inp = document.getElementById('inputPlaca');
+    inp.value = qp;
+    setTimeout(()=>{ document.getElementById('formConsulta').dispatchEvent(new Event('submit',{cancelable:true})); }, 300);
+  }
+}).catch(()=>{ DADOS=[]; });
 
 const burgerBtn = document.getElementById('burgerBtn');
 const mobileMenu = document.getElementById('mobileMenu');

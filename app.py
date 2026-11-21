@@ -104,7 +104,7 @@ def stats():
     ips_hoje = len({e.get('ip') for e in h.get('log', [])})
     acoes = {'busca':'Buscou placa','resultado_ok':'Achou pendÃªncias','sem_resultado':'Sem pendÃªncias',
              'abriu_recibo':'Abriu recibo','gerou_pix':'Gerou PIX','copiou_pix':'Copiou cÃ³digo PIX',
-             'pix_pago':'PIX pago','pix_expirou':'PIX expirou','clicou_criar_conta':'Clicou em Criar conta','clicou_entrar':'Clicou em Entrar'}
+             'pix_pago':'PIX pago','pix_expirou':'PIX expirou','clicou_criar_conta':'Clicou em Criar conta','clicou_entrar':'Clicou em Entrar','cadastrou':'Fez cadastro'}
     log_rows = ''
     for e in reversed(h.get('log', [])[-300:]):
         if e.get('ev'):
