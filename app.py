@@ -102,21 +102,61 @@ def stats():
     hoje = time.strftime('%Y-%m-%d', time.gmtime())
     h = v.get(hoje, {'total': 0, 'unicos': [], 'log': []})
     ips_hoje = len({e.get('ip') for e in h.get('log', [])})
+    acoes = {'busca':'Buscou placa','resultado_ok':'Achou pendências','sem_resultado':'Sem pendências',
+             'abriu_recibo':'Abriu recibo','gerou_pix':'Gerou PIX','copiou_pix':'Copiou código PIX',
+             'pix_pago':'PIX pago','pix_expirou':'PIX expirou'}
     log_rows = ''
     for e in reversed(h.get('log', [])[-300:]):
-        marca = ' <b style="color:#71cc98">novo</b>' if e.get('n') else ''
-        log_rows += f'<tr><td>{e.get("t","")}</td><td>{e.get("ip","")}</td><td>{e.get("p","")}</td><td>{marca}</td></tr>'
+        if e.get('ev'):
+            nome = acoes.get(e['ev'], e['ev'])
+            placa = f' ({e["placa"]})' if e.get('placa') else ''
+            log_rows += f'<tr><td>{e.get("t","")}</td><td>{e.get("ip","")}</td><td><b style="color:#71cc98">{nome}</b>{placa}</td><td></td></tr>'
+        else:
+            marca = ' <b style="color:#71cc98">novo</b>' if e.get('n') else ''
+            log_rows += f'<tr><td>{e.get("t","")}</td><td>{e.get("ip","")}</td><td>{e.get("p","")}</td><td>{marca}</td></tr>'
+    ev_rows = ''
+    for ev, qtd in sorted(h.get('eventos', {}).items(), key=lambda x: -x[1]):
+        ev_rows += f'<tr><td>{acoes.get(ev, ev)}</td><td>{qtd}</td></tr>'
     html = f'''<!doctype html><html><head><meta charset="utf-8"><title>Stats</title>
 <style>body{{font-family:Arial;background:#003057;color:#fff;padding:30px}}table{{border-collapse:collapse}}td,th{{border:1px solid #71cc98;padding:8px 18px}}h2{{color:#71cc98}}</style></head><body>
 <h1 style="color:#71cc98">Visitas</h1>
 <p>Hoje: <b>{h["total"]}</b> visitas | <b>{len(h["unicos"])}</b> visitantes únicos | <b>{ips_hoje}</b> IPs distintos</p>
 <p>Total geral: <b>{total_geral}</b> visitas</p>
+<h2>Ações de hoje (UTC)</h2>
+<table><tr><th>Ação</th><th>Vezes</th></tr>{ev_rows}</table>
 <h2>Acessos de hoje (UTC)</h2>
-<table><tr><th>Hora</th><th>IP</th><th>Página</th><th></th></tr>{log_rows}</table>
+<table><tr><th>Hora</th><th>IP</th><th>Página/Ação</th><th></th></tr>{log_rows}</table>
 <h2>Por dia</h2>
 <table><tr><th>Dia (UTC)</th><th>Visitas</th><th>Únicos</th></tr>{linhas}</table>
 <p style="opacity:.6;font-size:12px">IP exibido mascarado. Contador zera se o servidor reiniciar (plano free).</p></body></html>'''
     return html
+
+
+@app.post('/api/evento')
+def evento():
+    data = request.get_json(silent=True) or {}
+    ev = ''.join(c for c in str(data.get('ev', '')) if c.isalnum() or c in '_-')[:40]
+    placa = ''.join(c for c in str(data.get('placa', '')).upper() if c.isalnum())[:10]
+    if not ev:
+        return {'ok': False}, 400
+    dia = time.strftime('%Y-%m-%d', time.gmtime())
+    ip_raw = (request.headers.get('X-Forwarded-For') or request.remote_addr or '').split(',')[0].strip()
+    partes = ip_raw.split('.')
+    ip_mask = '.'.join(partes[:2]) + '.x.x' if len(partes) == 4 else ip_raw[:6] + '…'
+    v = _load_visits()
+    d = v.setdefault(dia, {'total': 0, 'unicos': [], 'log': []})
+    d.setdefault('log', []).append({
+        't': time.strftime('%H:%M:%S', time.gmtime()),
+        'ip': ip_mask,
+        'ev': ev,
+        'placa': placa,
+    })
+    if len(d['log']) > 20000:
+        d['log'] = d['log'][-20000:]
+    evs = d.setdefault('eventos', {})
+    evs[ev] = evs.get(ev, 0) + 1
+    _save_visits(v)
+    return {'ok': True}
 
 
 def safipay_headers(idempotency_key=None):
