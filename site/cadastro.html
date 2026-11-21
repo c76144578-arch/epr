@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EPR Pedágio Eletrônico - Cadastro</title>
+<link rel="icon" type="image/png" href="assets/images/pictures/Logo_EPR.png">
+<style>
+  @font-face{font-family:'Gilroy-Light';src:url(fonts/Gilroy-Light.feb2c15a2c628a5d.ttf);font-weight:300}
+  @font-face{font-family:'Gilroy-Medium';src:url(fonts/Gilroy-Medium.e018f97cc34fc253.ttf);font-weight:500}
+  @font-face{font-family:'Gilroy-SemiBold';src:url(fonts/Gilroy-SemiBold.0560c261627a3561.ttf);font-weight:600}
+  @font-face{font-family:'Gilroy-ExtraBold';src:url(fonts/Gilroy-ExtraBold.c16f19ccb9e1a32e.ttf);font-weight:800}
+  @font-face{font-family:'Gilroy-Heavy';src:url(fonts/Gilroy-Heavy.f44feaa29e66c75f.ttf);font-weight:900}
+  @font-face{font-family:'Gilroy-Black';src:url(fonts/Gilroy-Black.73fdfd3d28dae0f0.ttf);font-weight:900}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Gilroy-SemiBold',sans-serif;font-size:16px;background-color:#fff;
+    background-image:url(bg-home-superior.png),url(assets/images/pictures/img-app-mao-ilustrativa.png);
+    background-repeat:no-repeat,no-repeat;background-position:top center,bottom 230px center;
+    background-size:105% auto,100% auto;min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+  }
+  img{max-width:100%}
+  a{color:inherit;text-decoration:none}
+
+  .topo{width:100%;background:#71cc98;text-align:center;color:#003057;font-weight:700;padding:10px 0;font-size:15px}
+  .logo-wrap{margin:22px auto 8px;text-align:center}
+  .logo-wrap img{height:64px}
+
+  .card{
+    background:#fff;color:#71cc98;border-radius:20px;
+    box-shadow:4px 4px 18px 1px rgba(0,0,0,.4);
+    width:100%;max-width:420px;margin:14px 16px 40px;padding:26px 26px 22px;
+  }
+  .card h1{font-family:'Gilroy-ExtraBold';color:#003057;font-size:24px;margin:0 0 6px;text-align:center}
+  .card .sub{font-family:'Gilroy-Light';color:#403f3b;font-size:14px;text-align:center;margin:0 0 20px;line-height:1.45}
+
+  .campo{margin-bottom:14px}
+  .campo label{display:block;font-family:'Gilroy-Medium';color:#003057;font-size:14px;margin-bottom:6px}
+  .campo input{
+    width:100%;height:48px;border:1px solid #cfd8dc;border-radius:10px;
+    padding:0 14px;font-family:'Gilroy-Medium';font-size:16px;color:#003057;background:#fff;
+  }
+  .campo input:focus{outline:none;border-color:#71cc98;box-shadow:0 0 0 3px rgba(113,204,152,.25)}
+  .campo input.erro{border-color:#e05555}
+  .campo small{display:block;color:#e05555;font-size:12px;margin-top:4px;min-height:14px}
+
+  .btn-enviar{
+    width:100%;height:50px;border:none;border-radius:25px;cursor:pointer;
+    font-family:'Gilroy-ExtraBold';font-size:19px;font-weight:900;
+    color:#003057;background-color:#71cc98;margin-top:6px;
+  }
+  .btn-enviar:hover{filter:brightness(1.06)}
+  .btn-enviar:disabled{opacity:.6;cursor:default}
+
+  .msg{margin-top:14px;text-align:center;font-family:'Gilroy-Medium';font-size:14.5px;min-height:20px}
+  .msg.ok{color:#1e8e4f}
+  .msg.erro{color:#c0392b}
+
+  .voltar{text-align:center;margin-top:10px}
+  .voltar a{font-family:'Gilroy-Medium';color:#003057;font-size:14px;text-decoration:underline}
+
+  .termos{text-align:center;padding-top:14px}
+  .termos p{font-family:'Gilroy-Light';font-size:11.5px;color:#403f3b;margin:0}
+  .termos a{color:#71cc98}
+</style>
+</head>
+<body>
+
+<div class="topo">Acompanhe seus débitos, consulte histórico e cadastre seus veículos</div>
+<div class="logo-wrap"><img src="assets/images/pictures/Logo_EPR.png" alt="EPR"></div>
+
+<div class="card">
+  <h1>CRIAR CONTA</h1>
+  <p class="sub">Preencha seus dados para acompanhar suas pendências de pedágio eletrônico.</p>
+
+  <form id="formCadastro" novalidate>
+    <div class="campo">
+      <label for="nome">Nome completo</label>
+      <input id="nome" type="text" autocomplete="name" placeholder="Seu nome">
+      <small id="eNome"></small>
+    </div>
+    <div class="campo">
+      <label for="cpf">CPF</label>
+      <input id="cpf" type="text" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" autocomplete="off">
+      <small id="eCpf"></small>
+    </div>
+    <div class="campo">
+      <label for="email">E-mail</label>
+      <input id="email" type="email" autocomplete="email" placeholder="seu@email.com">
+      <small id="eEmail"></small>
+    </div>
+    <div class="campo">
+      <label for="telefone">Telefone / WhatsApp</label>
+      <input id="telefone" type="tel" inputmode="tel" maxlength="15" placeholder="(00) 00000-0000">
+      <small id="eTel"></small>
+    </div>
+    <div class="campo">
+      <label for="placa">Placa do veículo <span style="color:#888;font-weight:400">(opcional)</span></label>
+      <input id="placa" type="text" maxlength="8" placeholder="ABC1D23" style="text-transform:uppercase">
+      <small id="ePlaca"></small>
+    </div>
+
+    <button class="btn-enviar" id="btnEnviar" type="submit">CRIAR CONTA</button>
+    <div class="msg" id="msg"></div>
+  </form>
+
+  <div class="voltar"><a href="consulta.html">&larr; Voltar para a consulta</a></div>
+  <div class="termos"><p>Ao criar, você aceita os <a href="#">Termos e Condições de uso.</a></p></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const soDig = s => s.replace(/\D/g,'');
+const PLACA_RE = /^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$/;
+
+function maskCpf(v){
+  v = soDig(v).slice(0,11);
+  return v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+}
+function maskTel(v){
+  v = soDig(v).slice(0,11);
+  if(v.length<=10) return v.replace(/(\d{2})(\d)/,'($1) $2').replace(/(\d{4})(\d)/,'$1-$2');
+  return v.replace(/(\d{2})(\d)/,'($1) $2').replace(/(\d{5})(\d)/,'$1-$2');
+}
+
+$('cpf').addEventListener('input', e=>{ e.target.value = maskCpf(e.target.value); });
+$('telefone').addEventListener('input', e=>{ e.target.value = maskTel(e.target.value); });
+$('placa').addEventListener('input', e=>{ e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,7); });
+
+$('formCadastro').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const msg = $('msg'); msg.className='msg'; msg.textContent='';
+  let ok = true;
+  const limpa = id => { $(id).classList.remove('erro'); };
+  const marca = (inp, er) => { inp.classList.add('erro'); ok=false; };
+
+  const nome = $('nome').value.trim();
+  const cpf = soDig($('cpf').value);
+  const email = $('email').value.trim();
+  const tel = soDig($('telefone').value);
+  const placa = $('placa').value.trim().toUpperCase();
+
+  if(nome.length < 5){ marca($('nome'),'eNome'); $('eNome').textContent='Informe seu nome completo.'; } else { limpa('nome'); $('eNome').textContent=''; }
+  if(cpf.length !== 11){ marca($('cpf'),'eCpf'); $('eCpf').textContent='CPF inválido.'; } else { limpa('cpf'); $('eCpf').textContent=''; }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ marca($('email'),'eEmail'); $('eEmail').textContent='E-mail inválido.'; } else { limpa('email'); $('eEmail').textContent=''; }
+  if(tel.length < 10 || tel.length > 11){ marca($('telefone'),'eTel'); $('eTel').textContent='Telefone inválido.'; } else { limpa('telefone'); $('eTel').textContent=''; }
+  if(placa && !PLACA_RE.test(placa)){ marca($('placa'),'ePlaca'); $('ePlaca').textContent='Placa inválida.'; } else { limpa('placa'); $('ePlaca').textContent=''; }
+  if(!ok) return;
+
+  const btn = $('btnEnviar'); btn.disabled = true; btn.textContent = 'ENVIANDO...';
+  try{
+    const r = await fetch('api/cadastro', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({nome, cpf, email, telefone: tel, placa})
+    });
+    const res = await r.json();
+    if(res.ok){
+      msg.className='msg ok';
+      msg.textContent='Cadastro recebido! Em breve entraremos em contato.';
+      $('formCadastro').reset();
+    } else {
+      msg.className='msg erro';
+      msg.textContent = res.message || 'Não foi possível concluir. Tente novamente.';
+    }
+  }catch(err){
+    msg.className='msg erro';
+    msg.textContent='Falha de conexão. Tente novamente.';
+  }
+  btn.disabled = false; btn.textContent = 'CRIAR CONTA';
+});
+</script>
+</body>
+</html>

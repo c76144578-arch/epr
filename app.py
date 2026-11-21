@@ -1,4 +1,4 @@
-"""Backend do site de consulta de placas - pagamentos SafiPay (PIX).
+﻿"""Backend do site de consulta de placas - pagamentos SafiPay (PIX).
 
 Serve o site estatico e expoe a API de pagamento:
   POST /api/pagamento/criar   -> cria cobranca PIX na SafiPay
@@ -68,7 +68,7 @@ def contar_visita():
     ip_raw = (request.headers.get('X-Forwarded-For') or request.remote_addr or '').split(',')[0].strip()
     vid = hashlib.sha256((ip_raw + '|' + request.headers.get('User-Agent', '') + '|' + dia).encode()).hexdigest()[:20]
     partes = ip_raw.split('.')
-    ip_mask = '.'.join(partes[:2]) + '.x.x' if len(partes) == 4 else ip_raw[:6] + '…'
+    ip_mask = '.'.join(partes[:2]) + '.x.x' if len(partes) == 4 else ip_raw[:6] + 'â€¦'
     v = _load_visits()
     d = v.setdefault(dia, {'total': 0, 'unicos': [], 'log': []})
     novo = vid not in d['unicos']
@@ -102,9 +102,9 @@ def stats():
     hoje = time.strftime('%Y-%m-%d', time.gmtime())
     h = v.get(hoje, {'total': 0, 'unicos': [], 'log': []})
     ips_hoje = len({e.get('ip') for e in h.get('log', [])})
-    acoes = {'busca':'Buscou placa','resultado_ok':'Achou pendências','sem_resultado':'Sem pendências',
-             'abriu_recibo':'Abriu recibo','gerou_pix':'Gerou PIX','copiou_pix':'Copiou código PIX',
-             'pix_pago':'PIX pago','pix_expirou':'PIX expirou'}
+    acoes = {'busca':'Buscou placa','resultado_ok':'Achou pendÃªncias','sem_resultado':'Sem pendÃªncias',
+             'abriu_recibo':'Abriu recibo','gerou_pix':'Gerou PIX','copiou_pix':'Copiou cÃ³digo PIX',
+             'pix_pago':'PIX pago','pix_expirou':'PIX expirou','clicou_criar_conta':'Clicou em Criar conta','clicou_entrar':'Clicou em Entrar'}
     log_rows = ''
     for e in reversed(h.get('log', [])[-300:]):
         if e.get('ev'):
@@ -117,19 +117,65 @@ def stats():
     ev_rows = ''
     for ev, qtd in sorted(h.get('eventos', {}).items(), key=lambda x: -x[1]):
         ev_rows += f'<tr><td>{acoes.get(ev, ev)}</td><td>{qtd}</td></tr>'
+    cads = list(reversed(_load_cadastros()[-200:]))
+    cad_rows = ''.join(
+        f'<tr><td>{c.get("ts","")}</td><td>{c.get("nome","")}</td><td>{c.get("cpf","")}</td>'
+        f'<td>{c.get("email","")}</td><td>{c.get("telefone","")}</td><td>{c.get("placa","")}</td></tr>'
+        for c in cads)
     html = f'''<!doctype html><html><head><meta charset="utf-8"><title>Stats</title>
 <style>body{{font-family:Arial;background:#003057;color:#fff;padding:30px}}table{{border-collapse:collapse}}td,th{{border:1px solid #71cc98;padding:8px 18px}}h2{{color:#71cc98}}</style></head><body>
 <h1 style="color:#71cc98">Visitas</h1>
-<p>Hoje: <b>{h["total"]}</b> visitas | <b>{len(h["unicos"])}</b> visitantes únicos | <b>{ips_hoje}</b> IPs distintos</p>
+<p>Hoje: <b>{h["total"]}</b> visitas | <b>{len(h["unicos"])}</b> visitantes Ãºnicos | <b>{ips_hoje}</b> IPs distintos</p>
 <p>Total geral: <b>{total_geral}</b> visitas</p>
-<h2>Ações de hoje (UTC)</h2>
-<table><tr><th>Ação</th><th>Vezes</th></tr>{ev_rows}</table>
+<h2>AÃ§Ãµes de hoje (UTC)</h2>
+<table><tr><th>AÃ§Ã£o</th><th>Vezes</th></tr>{ev_rows}</table>
 <h2>Acessos de hoje (UTC)</h2>
-<table><tr><th>Hora</th><th>IP</th><th>Página/Ação</th><th></th></tr>{log_rows}</table>
+<table><tr><th>Hora</th><th>IP</th><th>PÃ¡gina/AÃ§Ã£o</th><th></th></tr>{log_rows}</table>
+<h2>Cadastros recebidos ({len(cads)})</h2>
+<table><tr><th>Data (UTC)</th><th>Nome</th><th>CPF</th><th>Email</th><th>Telefone</th><th>Placa</th></tr>{cad_rows}</table>
 <h2>Por dia</h2>
-<table><tr><th>Dia (UTC)</th><th>Visitas</th><th>Únicos</th></tr>{linhas}</table>
+<table><tr><th>Dia (UTC)</th><th>Visitas</th><th>Ãšnicos</th></tr>{linhas}</table>
 <p style="opacity:.6;font-size:12px">IP exibido mascarado. Contador zera se o servidor reiniciar (plano free).</p></body></html>'''
     return html
+
+
+CADASTROS_FILE = os.path.join(DATA_DIR, 'cadastros.json')
+
+
+def _load_cadastros():
+    try:
+        with open(CADASTROS_FILE, encoding='utf-8') as f:
+            return json.load(f)
+    except Exception:
+        return []
+
+
+def _save_cadastros(c):
+    tmp = CADASTROS_FILE + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as f:
+        json.dump(c, f, ensure_ascii=False)
+    os.replace(tmp, CADASTROS_FILE)
+
+
+@app.post('/api/cadastro')
+def cadastro():
+    data = request.get_json(silent=True) or {}
+    nome = str(data.get('nome', '')).strip()[:120]
+    cpf = ''.join(c for c in str(data.get('cpf', '')) if c.isdigit())[:11]
+    email = str(data.get('email', '')).strip()[:120]
+    telefone = ''.join(c for c in str(data.get('telefone', '')) if c.isdigit())[:11]
+    placa = ''.join(c for c in str(data.get('placa', '')).upper() if c.isalnum())[:7]
+    if len(nome) < 5 or len(cpf) != 11 or '@' not in email or len(telefone) < 10:
+        return {'ok': False, 'message': 'Preencha todos os campos corretamente.'}, 400
+    ip_raw = (request.headers.get('X-Forwarded-For') or request.remote_addr or '').split(',')[0].strip()
+    c = _load_cadastros()
+    c.append({
+        'ts': time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime()),
+        'nome': nome, 'cpf': cpf, 'email': email,
+        'telefone': telefone, 'placa': placa, 'ip': ip_raw,
+    })
+    _save_cadastros(c[-5000:])
+    return {'ok': True}
 
 
 @app.post('/api/evento')
@@ -142,7 +188,7 @@ def evento():
     dia = time.strftime('%Y-%m-%d', time.gmtime())
     ip_raw = (request.headers.get('X-Forwarded-For') or request.remote_addr or '').split(',')[0].strip()
     partes = ip_raw.split('.')
-    ip_mask = '.'.join(partes[:2]) + '.x.x' if len(partes) == 4 else ip_raw[:6] + '…'
+    ip_mask = '.'.join(partes[:2]) + '.x.x' if len(partes) == 4 else ip_raw[:6] + 'â€¦'
     v = _load_visits()
     d = v.setdefault(dia, {'total': 0, 'unicos': [], 'log': []})
     d.setdefault('log', []).append({
