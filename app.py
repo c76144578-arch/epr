@@ -14,7 +14,7 @@ from functools import wraps
 
 import requests
 import qrcode
-from flask import Flask, request, jsonify, send_from_directory, abort
+from flask import Flask, request, jsonify, send_from_directory, abort, redirect
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def _site_dir():
@@ -471,11 +471,20 @@ def webhook():
 def static_files(path):
     if path.startswith('api/'):
         abort(404)
+    # URL limpa: /consulta.html -> /consulta (e /index.html -> /)
+    if path.endswith('.html') and os.path.isfile(os.path.join(SITE_DIR, path)):
+        clean = path[:-5]
+        qs = ('?' + request.query_string.decode()) if request.query_string else ''
+        return redirect(('/' + qs) if clean == 'index' else ('/' + clean + qs), code=301)
     if path == '':
         path = 'index.html'
     full = os.path.join(SITE_DIR, path)
     if os.path.isdir(full):
         full = os.path.join(full, 'index.html')
+    # /consulta -> consulta.html (sem extensao na barra de endereco)
+    if not os.path.isfile(full) and '.' not in path.rsplit('/', 1)[-1]:
+        if os.path.isfile(full + '.html'):
+            return send_from_directory(SITE_DIR, path + '.html')
     if not os.path.isfile(full):
         abort(404)
     return send_from_directory(SITE_DIR, path)
