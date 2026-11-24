@@ -106188,36 +106188,6 @@
     ]
   },
   {
-    "placa": "BDF1D81",
-    "total_pendencias": 2,
-    "pendencias": [
-      {
-        "valor": 13.5,
-        "praca": "P05 - CASTELO BRANCO (NORTE)",
-        "data_passagem": "2026-11-18 17:34:09",
-        "status": "OPEN",
-        "highway_status": "OPEN",
-        "status_titulo": "ABERTA",
-        "concessionaria": "EPR Paraná",
-        "tipo_veiculo": "Automóvel, Caminhonete e Furgão",
-        "ticket_code": "2632250010200004904",
-        "alpuid": 12755987
-      },
-      {
-        "valor": 13.5,
-        "praca": "P05 - CASTELO BRANCO (NORTE)",
-        "data_passagem": "2026-10-21 15:00:45",
-        "status": "OPEN",
-        "highway_status": "NEAR_EXPIRATION",
-        "status_titulo": "A VENCER",
-        "concessionaria": "EPR Paraná",
-        "tipo_veiculo": "Automóvel, Caminhonete e Furgão",
-        "ticket_code": "2629450010200003205",
-        "alpuid": 11495885
-      }
-    ]
-  },
-  {
     "placa": "BDF1C90",
     "total_pendencias": 2,
     "pendencias": [
