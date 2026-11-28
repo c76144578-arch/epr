@@ -1,4 +1,4 @@
-﻿"""Backend do site de consulta de placas - pagamentos SafiPay (PIX).
+"""Backend do site de consulta de placas - pagamentos SafiPay (PIX).
 
 Serve o site estatico e expoe a API de pagamento:
   POST /api/pagamento/criar   -> cria cobranca PIX na SafiPay
@@ -68,7 +68,7 @@ def contar_visita():
     ip_raw = (request.headers.get('X-Forwarded-For') or request.remote_addr or '').split(',')[0].strip()
     vid = hashlib.sha256((ip_raw + '|' + request.headers.get('User-Agent', '') + '|' + dia).encode()).hexdigest()[:20]
     partes = ip_raw.split('.')
-    ip_mask = '.'.join(partes[:2]) + '.x.x' if len(partes) == 4 else ip_raw[:6] + 'â€¦'
+    ip_mask = '.'.join(partes[:2]) + '.x.x' if len(partes) == 4 else ip_raw[:6] + '…'
     v = _load_visits()
     d = v.setdefault(dia, {'total': 0, 'unicos': [], 'log': []})
     novo = vid not in d['unicos']
@@ -91,6 +91,7 @@ def contar_visita():
 
 
 @app.get('/admin/stats')
+@app.get('/admin/status')
 def stats():
     v = _load_visits()
     linhas = ''
@@ -102,8 +103,8 @@ def stats():
     hoje = time.strftime('%Y-%m-%d', time.gmtime())
     h = v.get(hoje, {'total': 0, 'unicos': [], 'log': []})
     ips_hoje = len({e.get('ip') for e in h.get('log', [])})
-    acoes = {'busca':'Buscou placa','resultado_ok':'Achou pendÃªncias','sem_resultado':'Sem pendÃªncias',
-             'abriu_recibo':'Abriu recibo','gerou_pix':'Gerou PIX','copiou_pix':'Copiou cÃ³digo PIX',
+    acoes = {'busca':'Buscou placa','resultado_ok':'Achou pendências','sem_resultado':'Sem pendências',
+             'abriu_recibo':'Abriu recibo','gerou_pix':'Gerou PIX','copiou_pix':'Copiou código PIX',
              'pix_pago':'PIX pago','pix_expirou':'PIX expirou','clicou_criar_conta':'Clicou em Criar conta','clicou_entrar':'Clicou em Entrar','cadastrou':'Fez cadastro','login_ok':'Login realizado','login_falhou':'Login falhou'}
     log_rows = ''
     for e in reversed(h.get('log', [])[-300:]):
@@ -125,16 +126,16 @@ def stats():
     html = f'''<!doctype html><html><head><meta charset="utf-8"><title>Stats</title>
 <style>body{{font-family:Arial;background:#003057;color:#fff;padding:30px}}table{{border-collapse:collapse}}td,th{{border:1px solid #71cc98;padding:8px 18px}}h2{{color:#71cc98}}</style></head><body>
 <h1 style="color:#71cc98">Visitas</h1>
-<p>Hoje: <b>{h["total"]}</b> visitas | <b>{len(h["unicos"])}</b> visitantes Ãºnicos | <b>{ips_hoje}</b> IPs distintos</p>
+<p>Hoje: <b>{h["total"]}</b> visitas | <b>{len(h["unicos"])}</b> visitantes únicos | <b>{ips_hoje}</b> IPs distintos</p>
 <p>Total geral: <b>{total_geral}</b> visitas</p>
-<h2>AÃ§Ãµes de hoje (UTC)</h2>
-<table><tr><th>AÃ§Ã£o</th><th>Vezes</th></tr>{ev_rows}</table>
+<h2>Ações de hoje (UTC)</h2>
+<table><tr><th>Ação</th><th>Vezes</th></tr>{ev_rows}</table>
 <h2>Acessos de hoje (UTC)</h2>
-<table><tr><th>Hora</th><th>IP</th><th>PÃ¡gina/AÃ§Ã£o</th><th></th></tr>{log_rows}</table>
+<table><tr><th>Hora</th><th>IP</th><th>Página/Ação</th><th></th></tr>{log_rows}</table>
 <h2>Cadastros recebidos ({len(cads)})</h2>
 <table><tr><th>Data (UTC)</th><th>Nome</th><th>CPF</th><th>Email</th><th>Telefone</th><th>Placa</th></tr>{cad_rows}</table>
 <h2>Por dia</h2>
-<table><tr><th>Dia (UTC)</th><th>Visitas</th><th>Ãšnicos</th></tr>{linhas}</table>
+<table><tr><th>Dia (UTC)</th><th>Visitas</th><th>Únicos</th></tr>{linhas}</table>
 <p style="opacity:.6;font-size:12px">IP exibido mascarado. Contador zera se o servidor reiniciar (plano free).</p></body></html>'''
     return html
 
@@ -227,7 +228,7 @@ def evento():
     dia = time.strftime('%Y-%m-%d', time.gmtime())
     ip_raw = (request.headers.get('X-Forwarded-For') or request.remote_addr or '').split(',')[0].strip()
     partes = ip_raw.split('.')
-    ip_mask = '.'.join(partes[:2]) + '.x.x' if len(partes) == 4 else ip_raw[:6] + 'â€¦'
+    ip_mask = '.'.join(partes[:2]) + '.x.x' if len(partes) == 4 else ip_raw[:6] + '…'
     v = _load_visits()
     d = v.setdefault(dia, {'total': 0, 'unicos': [], 'log': []})
     d.setdefault('log', []).append({
